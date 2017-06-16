@@ -32,7 +32,7 @@ def get_calendar_by_name(calendar_name):
 def _log_xml_resp(campus, url, response):
     if response.status == 200 and response.data is not None:
         logger.info("%s %s ==status==> %s" % (campus, url, response.status))
-        root = etree.fromstring(response.data)
+        root = etree.fromstring(response.raw)
         resp_msg = ''
         for el in root.iterchildren():
             resp_msg += str(el.attrib)
