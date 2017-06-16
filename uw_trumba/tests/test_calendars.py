@@ -3,7 +3,7 @@ from restclients_core.exceptions import DataFailureException
 from uw_trumba.models import is_view_permission,\
     is_showon_permission, is_edit_permission, is_publish_permission,\
     is_higher_permission
-import restclients.trumba.calendar as Calendar
+import uw_trumba.calendard as Calendar
 from uw_trumba.exceptions import TrumbaException, CalendarNotExist, CalendarOwnByDiffAccount, NoDataReturned, UnknownError, UnexpectedError
 from uw_trumba.util import fdao_trumba_sea_override,\
     fdao_trumba_bot_override, fdao_trumba_tac_override
