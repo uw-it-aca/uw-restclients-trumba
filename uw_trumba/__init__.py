@@ -9,9 +9,9 @@ import json
 import time
 from lxml import etree
 from icalendar import Calendar, Event
-from restclients.dao import TrumbaBot_DAO, TrumbaSea_DAO, TrumbaTac_DAO
-from restclients.dao import TrumbaCalendar_DAO
-from restclients.exceptions import DataFailureException
+from uw_trumba.dao import TrumbaBot_DAO, TrumbaSea_DAO, TrumbaTac_DAO
+from uw_trumba.dao import TrumbaCalendar_DAO
+from restclients_core.exceptions import DataFailureException
 
 logger = logging.getLogger(__name__)
 
