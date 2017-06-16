@@ -1,6 +1,6 @@
 from unittest import TestCase
 from uw_trumba import get_calendar_by_name
-from uw_trumba.util import fdao_
+from uw_trumba.util import fdao_trumba_override
 
 
 @fdao_trumba_override

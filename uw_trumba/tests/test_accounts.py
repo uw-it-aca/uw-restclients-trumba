@@ -1,5 +1,5 @@
 from unittest import TestCase
-from django.conf import settings
+from commonconf import settings
 from restclients_core.exceptions import DataFailureException
 from uw_trumba.account import _make_add_account_url,\
     add_editor, _make_del_account_url, delete_editor,\

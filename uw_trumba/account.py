@@ -10,7 +10,10 @@ from functools import partial
 import logging
 import re
 from lxml import etree, objectify
-from urllib import quote, unquote
+try:
+    from urllib import quote, unquote
+except ImportError:
+    from urllib.parse import quote, unquote
 from restclients_core.exceptions import DataFailureException
 from uw_trumba.models import Permission
 from uw_trumba import get_bot_resource, get_sea_resource,\
