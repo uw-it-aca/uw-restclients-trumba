@@ -241,7 +241,7 @@ def _load_permissions(campus, calendarid, resp_fragment, permission_list):
         perm.campus = campus
         perm.uwnetid = _extract_uwnetid(record['Email'])
         perm.level = record['Level']
-        perm.name = unicode(record['Name'])
+        perm.name = str(record['Name'])
         permission_list.append(perm)
 
 

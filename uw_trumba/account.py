@@ -23,6 +23,7 @@ from uw_trumba.exceptions import AccountNameEmpty, AccountNotExist,\
     InvalidEmail, InvalidPermissionLevel, FailedToClosePublisher,\
     NoAllowedPermission, ErrorCreatingEditor, NoDataReturned,\
     UnexpectedError, UnknownError
+from uw_trumba.util import to_bytestring
 
 
 add_account_url_prefix = "/service/accounts.asmx/CreateEditor"
@@ -189,7 +190,7 @@ def _process_resp(request_id, response, is_success_func):
                                    )
     if response.data is None:
         raise NoDataReturned()
-    root = objectify.fromstring(response.data)
+    root = objectify.fromstring(to_bytestring(response.data))
     if root.ResponseMessage is None or\
             root.ResponseMessage.attrib['Code'] is None:
         raise UnknownError()

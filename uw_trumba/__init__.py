@@ -11,6 +11,7 @@ from lxml import etree
 from icalendar import Calendar, Event
 from uw_trumba.dao import TrumbaBot_DAO, TrumbaSea_DAO, TrumbaTac_DAO
 from uw_trumba.dao import TrumbaCalendar_DAO
+from uw_trumba.util import to_bytestring
 from restclients_core.exceptions import DataFailureException
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ def get_calendar_by_name(calendar_name):
 def _log_xml_resp(campus, url, response):
     if response.status == 200 and response.data is not None:
         logger.info("%s %s ==status==> %s" % (campus, url, response.status))
-        root = etree.fromstring(response.data)
+        root = etree.fromstring(to_bytestring(response.data))
         resp_msg = ''
         for el in root.iterchildren():
             resp_msg += str(el.attrib)
