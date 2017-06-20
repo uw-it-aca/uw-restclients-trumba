@@ -26,7 +26,7 @@ setup(
                       'icalendar',
                       ],
     license='Apache License, Version 2.0',
-    description=('A library for connecting to the UW NetID API'),
+    description=('A library for connecting to the Trumba API'),
     long_description=README,
     url="https://github.com/uw-it-aca/uw-restclients-iasystem",
     classifiers=[
