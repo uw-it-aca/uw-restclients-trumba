@@ -18,8 +18,8 @@ script:
 after_script:
 - coveralls
 before_deploy:
-- find uw_grad/ -name \*.pyc -exec rm {} \;
-- echo $TRAVIS_TAG > uw_grad/VERSION
+- find uw_trumba/ -name \*.pyc -exec rm {} \;
+- echo $TRAVIS_TAG > uw_trumba/VERSION
 deploy:
   provider: pypi
   server: https://pypi.python.org/pypi
