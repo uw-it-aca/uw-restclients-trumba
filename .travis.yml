@@ -17,3 +17,16 @@ script:
 - coverage run --source=uw_trumba uw_trumba/test.py -v
 after_script:
 - coveralls
+before_deploy:
+- find uw_grad/ -name \*.pyc -exec rm {} \;
+- echo $TRAVIS_TAG > uw_grad/VERSION
+deploy:
+  provider: pypi
+  server: https://pypi.python.org/pypi
+  user: uw-it-aca
+  skip_cleanup: true
+  password:
+    secure: YXQ0CKC/GtPytpNRU0/boIkWe2dr3EbNcyXMyliF7HlyjhCMOjvgopnMZgzot13c5GkIGIskeY/+53FPB+m1IxvdwVK8tC/rOanyX1eFPchdM3se8PqB/oxnzU1gGMOAos3IPpDE6ONbDMqEbKW1/0fh17/2hEghzhV4Cj+NeVlcSWJunf4QgzpVt81UjRPCMFHYt4CZlGtEp8waI/eraf/YzIVSbdsYXnscIZKaYzvnAd6S94rOjMt38d6Z9zWXHAS9jolIDKd7VN+eXnRIqdX8jdA7JykJfNtvAzQj53HbSnm1aMg4rTV5xA3ncKfGBuSaLaZH1LqBypQDLOxxAnxjwcPaCBwmiEcKC7QS86M9rp+GWJU6z0jQspn0ZAz+s5uQcNlSKv/Cbmjj6GHaafN0QhUbEMSgzN3uJ6rJaF4gdwegcaTOxRIpl+3UmiyISx7FpgJGDVlzRaM8+Vvm6BuHp5j9f7f4k+qcKXLSnaXBve0p3j8kqexkeVqtxcqFMi0eZwh9POfsdtgmrISJE1ITMzWoi1+jMllxkwCDx6HtHpRDTFSnN3u6W1gRWCQ0N9EqN9aq3cpyioGhgM7UnRuryKupQIvtVfCV1I729d6MOD88+9+gyrQatM/9eKWojgqd5OvmjO5JBij2J7AOYoO/eV6KUEmY4RescYSKmdY=
+  on:
+    tags: true
+condition: $TRAVIS_PYTHON_VERSION = "2.7"
