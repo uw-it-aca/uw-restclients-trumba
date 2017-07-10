@@ -18,6 +18,9 @@ def is_tac(campus_code):
 
 
 def is_valid_campus_code(campus_code):
+    """
+    Returns true if the campus_code equals 'sea', 'bot', or 'tac'
+    """
     return is_bot(campus_code) or is_sea(campus_code) or is_tac(campus_code)
 
 
