@@ -1,4 +1,5 @@
 from unittest import TestCase
+from restclients_core.exceptions import DataFailureException
 from uw_trumba import get_calendar_by_name
 
 
@@ -7,6 +8,10 @@ class TestCalendarParse(TestCase):
     def test_ical_parsing(self):
         calendar = get_calendar_by_name('sea_acad-comm')
         self.assertEquals(len(calendar.walk('vevent')), 4)
+
+        self.assertRaises(DataFailureException,
+                          get_calendar_by_name,
+                          'sea_none')
 
     def test_ical_parsing_err(self):
         calendar = get_calendar_by_name('sea_err')
