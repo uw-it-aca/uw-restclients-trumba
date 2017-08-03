@@ -9,10 +9,11 @@ import json
 import time
 from lxml import etree
 from icalendar import Calendar, Event
+from restclients_core.exceptions import DataFailureException
 from uw_trumba.dao import TrumbaBot_DAO, TrumbaSea_DAO, TrumbaTac_DAO
 from uw_trumba.dao import TrumbaCalendar_DAO
 from uw_trumba.util import to_bytestring
-from restclients_core.exceptions import DataFailureException
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +25,12 @@ def get_calendar_by_name(calendar_name):
 
     if response.status != 200:
         raise DataFailureException(url, response.status, response.data)
-
-    calendar = Calendar.from_ical(response.data)
+    try:
+        calendar = Calendar.from_ical(response.data)
+    except Exception as ex:
+        # turn data errors (ie, UnicodeEncodeError) into
+        # DataFailureException
+        raise DataFailureException(url, 503, ex)
 
     return calendar
 
