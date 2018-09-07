@@ -40,7 +40,7 @@ def _log_xml_resp(campus, url, response):
     response_data = str(response.data)
     if response.status == 200 and response_data is not None:
         logger.info("%s %s ==status==> %s" % (campus, url, response.status))
-        root = etree.fromstring(str(response_data))
+        root = etree.fromstring(response_data)
         resp_msg = ''
         for el in root.iterchildren():
             resp_msg += str(el.attrib)
@@ -56,7 +56,7 @@ def _log_json_resp(campus, url, body, response):
         logger.info("%s %s %s ==status==> %s" % (campus, url, body,
                                                  response.status))
         logger.debug("%s %s %s ==data==> %s" % (campus, url, body,
-                                                response.data))
+                                                str(response.data)))
     else:
         logger.error("%s %s %s ==error==> %s %s" % (campus, url, body,
                                                     response.status,
