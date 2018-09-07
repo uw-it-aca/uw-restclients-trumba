@@ -4,10 +4,7 @@ import json
 import re
 from os.path import abspath, dirname
 from restclients_core.dao import DAO
-try:
-    from urllib import urlencode
-except:
-    from urllib.parse import urlencode
+from urllib.parse import urlencode
 
 
 class TrumbaCalendar_DAO(DAO):
@@ -34,7 +31,7 @@ class TrumbaSea_DAO(DAO):
                 try:
                     url = url + "." + method.title()
                     url = url + "_" + urlencode(json.loads(body))
-                    url = re.sub('[\?|<>=:*,;+&"@$]', '_', url)
+                    url = re.sub(r'[\?|<>=:*,;+&"@$]', '_', url)
                     second_path = "%s/resources/%s/file%s" % (
                         abspath(dirname(__file__)), self.service_name(),
                         url)

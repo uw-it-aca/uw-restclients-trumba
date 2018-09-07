@@ -37,7 +37,7 @@ def _make_add_account_url(name, userid):
     Trumba CreateEditor method
     """
     return "%s?Name=%s&Email=%s@washington.edu&Password=" % (
-        add_account_url_prefix, re.sub(' ', '%20', name), userid)
+        add_account_url_prefix, re.sub(r' ', '%20', name), userid)
 
 
 def add_editor(name, userid):
