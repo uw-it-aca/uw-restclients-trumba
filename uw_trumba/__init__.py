@@ -22,12 +22,12 @@ def get_calendar_by_name(calendar_name):
     url = "/calendars/%s.ics" % calendar_name
 
     response = TrumbaCalendar_DAO().getURL(url)
-    response_data = str(response.data)
 
     if response.status != 200:
-        raise DataFailureException(url, response.status, response_data)
+        raise DataFailureException(url, response.status, str(response.data))
+
     try:
-        calendar = Calendar.from_ical(response_data)
+        calendar = Calendar.from_ical(response.data)
     except Exception as ex:
         # turn data errors (ie, UnicodeEncodeError) into
         # DataFailureException
@@ -37,10 +37,9 @@ def get_calendar_by_name(calendar_name):
 
 
 def _log_xml_resp(campus, url, response):
-    response_data = str(response.data)
-    if response.status == 200 and response_data is not None:
+    if response.status == 200 and response.data is not None:
         logger.debug("%s %s ==status==> %s" % (campus, url, response.status))
-        root = etree.fromstring(response_data)
+        root = etree.fromstring(response.data)
         resp_msg = ''
         for el in root.iterchildren():
             resp_msg += str(el.attrib)
