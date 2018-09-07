@@ -190,7 +190,7 @@ def _process_resp(request_id, response, is_success_func):
                                    )
     if response.data is None:
         raise NoDataReturned()
-    root = objectify.fromstring(to_bytestring(response.data))
+    root = objectify.fromstring(str(response.data))
     if root.ResponseMessage is None or\
             root.ResponseMessage.attrib['Code'] is None:
         raise UnknownError()
