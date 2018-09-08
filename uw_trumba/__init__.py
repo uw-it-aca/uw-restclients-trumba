@@ -52,7 +52,7 @@ def _log_xml_resp(campus, url, response):
 def _log_json_resp(campus, url, body, response):
     if response.status == 200 and response.data is not None:
         logger.debug("%s %s %s ==status==> %s" % (campus, url, body,
-                                                 response.status))
+                                                  response.status))
         logger.debug("%s %s %s ==data==> %s" % (campus, url, body,
                                                 str(response.data)))
     else:
