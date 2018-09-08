@@ -12,7 +12,6 @@ from icalendar import Calendar, Event
 from restclients_core.exceptions import DataFailureException
 from uw_trumba.dao import TrumbaBot_DAO, TrumbaSea_DAO, TrumbaTac_DAO
 from uw_trumba.dao import TrumbaCalendar_DAO
-from uw_trumba.util import to_bytestring
 
 
 logger = logging.getLogger(__name__)

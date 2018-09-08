@@ -23,7 +23,6 @@ from uw_trumba.exceptions import AccountNameEmpty, AccountNotExist,\
     InvalidEmail, InvalidPermissionLevel, FailedToClosePublisher,\
     NoAllowedPermission, ErrorCreatingEditor, NoDataReturned,\
     UnexpectedError, UnknownError
-from uw_trumba.util import to_bytestring
 
 
 add_account_url_prefix = "/service/accounts.asmx/CreateEditor"
