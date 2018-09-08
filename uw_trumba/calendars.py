@@ -175,8 +175,8 @@ def _load_calendar(campus, resp_fragment, calendar_dict, parent):
              None if error, {} if not exists
     """
     for record in resp_fragment:
-        if re.match('Internal Event Actions', record['Name']) or\
-                re.match('Migrated .*', record['Name']):
+        if re.match(r'Internal Event Actions', record['Name']) or\
+                re.match(r'Migrated .*', record['Name']):
             continue
         trumba_cal = TrumbaCalendar()
         trumba_cal.calendarid = record['ID']
