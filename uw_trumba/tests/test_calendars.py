@@ -1,10 +1,12 @@
 from unittest import TestCase
 from restclients_core.exceptions import DataFailureException
-from uw_trumba.models import is_view_permission,\
-    is_showon_permission, is_edit_permission, is_publish_permission,\
-    is_higher_permission
+from uw_trumba.models import (
+    is_view_permission, is_showon_permission, is_edit_permission,
+    is_publish_permission, is_higher_permission)
 import uw_trumba.calendars as Calendar
-from uw_trumba.exceptions import TrumbaException, CalendarNotExist, CalendarOwnByDiffAccount, NoDataReturned, UnknownError, UnexpectedError
+from uw_trumba.exceptions import (
+    TrumbaException, CalendarNotExist, CalendarOwnByDiffAccount,
+    NoDataReturned, UnknownError, UnexpectedError)
 
 
 class TrumbaTestCalendars(TestCase):
@@ -147,29 +149,29 @@ class TrumbaTestCalendars(TestCase):
     def test_check_err(self):
         self.assertRaises(UnexpectedError,
                           Calendar._check_err,
-                          {"d":{"Messages":[{"Code":3009,
-                                             "Description":"..."}]}})
+                          {"d": {"Messages": [{"Code": 3009,
+                                               "Description": "..."}]}})
 
         self.assertRaises(CalendarOwnByDiffAccount,
                           Calendar._check_err,
-                          {"d":{"Messages":[{"Code":3007}]}})
+                          {"d": {"Messages": [{"Code": 3007}]}})
 
         self.assertRaises(CalendarNotExist,
                           Calendar._check_err,
-                          {"d":{"Messages":[{"Code":3006}]}})
+                          {"d": {"Messages": [{"Code": 3006}]}})
 
         self.assertRaises(NoDataReturned,
                           Calendar._check_err, {'d': None})
 
         self.assertRaises(UnknownError,
                           Calendar._check_err,
-                          {"d":{"Messages":[]}})
+                          {"d": {"Messages": []}})
 
         self.assertRaises(UnknownError,
                           Calendar._check_err,
-                          {"d":{"Messages":[{"Code": None}]}})
+                          {"d": {"Messages": [{"Code": None}]}})
 
-        self.assertIsNone(Calendar._check_err({"d":{"Messages":None}}))
+        self.assertIsNone(Calendar._check_err({"d": {"Messages": None}}))
 
     def test_process_get_cal_resp(self):
         """
