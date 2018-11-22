@@ -32,17 +32,17 @@ class TrumbaTestAccounts(TestCase):
 
     def test_add_editor_error_cases(self):
         self.assertRaises(AccountNameEmpty,
-                          add_editor,'','')
+                          add_editor, '', '')
 
         self.assertRaises(InvalidEmail,
-                          add_editor,'010','')
+                          add_editor, '010', '')
 
         self.assertRaises(AccountUsedByDiffUser,
-                          add_editor,'011','test10')
+                          add_editor, '011', 'test10')
 
     def test_add_editor_normal_cases(self):
-        self.assertTrue(add_editor('008','test8'))
-        self.assertTrue(add_editor('010','test10'))
+        self.assertTrue(add_editor('008', 'test8'))
+        self.assertTrue(add_editor('010', 'test10'))
 
     def test_make_del_account_url(self):
         self.assertEqual(_make_del_account_url('murray4'),
@@ -54,11 +54,10 @@ class TrumbaTestAccounts(TestCase):
 
     def test_delete_editor_error_cases(self):
         self.assertRaises(AccountNotExist,
-                          delete_editor,'')
+                          delete_editor, '')
 
         self.assertRaises(AccountNotExist,
-                          delete_editor,'test')
-
+                          delete_editor, 'test')
 
     def test_make_set_permissions_url(self):
         self.assertEqual(
