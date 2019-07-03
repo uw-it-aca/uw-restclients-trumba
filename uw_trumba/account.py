@@ -16,18 +16,20 @@ except ImportError:
     from urllib.parse import quote, unquote
 from restclients_core.exceptions import DataFailureException
 from uw_trumba.models import Permission
-from uw_trumba import get_bot_resource, get_sea_resource,\
-    get_tac_resource
-from uw_trumba.exceptions import AccountNameEmpty, AccountNotExist,\
-    AccountUsedByDiffUser, CalendarNotExist, CalendarOwnByDiffAccount,\
-    InvalidEmail, InvalidPermissionLevel, FailedToClosePublisher,\
-    NoAllowedPermission, ErrorCreatingEditor, NoDataReturned,\
-    UnexpectedError, UnknownError
+from uw_trumba import (
+    get_bot_resource, get_sea_resource, get_tac_resource)
+from uw_trumba.exceptions import (
+    AccountNameEmpty, AccountNotExist, AccountUsedByDiffUser,
+    CalendarNotExist, CalendarOwnByDiffAccount,
+    InvalidEmail, InvalidPermissionLevel, FailedToClosePublisher,
+    NoAllowedPermission, ErrorCreatingEditor, NoDataReturned,
+    UnexpectedError, UnknownError)
 
 
 add_account_url_prefix = "/service/accounts.asmx/CreateEditor"
 del_account_url_prefix = "/service/accounts.asmx/CloseEditor"
 set_permission_url_prefix = "/service/calendars.asmx/SetPermissions"
+logger = logging.getLogger(__name__)
 
 
 def _make_add_account_url(name, userid):
@@ -35,7 +37,7 @@ def _make_add_account_url(name, userid):
     :return: the URL string for the GET request call to
     Trumba CreateEditor method
     """
-    return "%s?Name=%s&Email=%s@washington.edu&Password=" % (
+    return "{0}?Name={1}&Email={2}@washington.edu&Password=".format(
         add_account_url_prefix, re.sub(r' ', '%20', name), userid)
 
 
@@ -59,7 +61,8 @@ def _make_del_account_url(userid):
     :return: the URL string for GET request call to
     Trumba CloseEditor method
     """
-    return "%s?Email=%s@washington.edu" % (del_account_url_prefix, userid)
+    return "{0}?Email={1}@washington.edu".format(
+        del_account_url_prefix, userid)
 
 
 def delete_editor(userid):
@@ -81,7 +84,7 @@ def _make_set_permissions_url(calendar_id, userid, level):
     :return: the URL string for GET request call
     to Trumba SetPermissions method
     """
-    return "%s?CalendarID=%s&Email=%s@washington.edu&Level=%s" % (
+    return "{0}?CalendarID={1}&Email={2}@washington.edu&Level={3}".format(
         set_permission_url_prefix, calendar_id, userid, level)
 
 
@@ -191,8 +194,8 @@ def _process_resp(request_id, response, is_success_func):
         raise NoDataReturned()
 
     root = objectify.fromstring(response.data)
-    if root.ResponseMessage is None or\
-            root.ResponseMessage.attrib['Code'] is None:
+    if (root.ResponseMessage is None or
+            root.ResponseMessage.attrib['Code'] is None):
         raise UnknownError()
     resp_code = int(root.ResponseMessage.attrib['Code'])
     func = partial(is_success_func)
@@ -253,7 +256,6 @@ def _check_err(code, request_id):
     elif code == 3017 or code == 3018:
         raise ErrorCreatingEditor()
     else:
-        logging.getLogger(__name__).warn(
-            "Unexpected Error Code: %s with %s" % (
-                code, request_id))
+        logger.error(
+            "Unexpected Error Code: {0} with {1}".format(code, request_id))
         raise UnexpectedError()

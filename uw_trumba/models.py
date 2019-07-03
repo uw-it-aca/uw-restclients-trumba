@@ -1,5 +1,19 @@
+import json
 from restclients_core import models
-from datetime import datetime
+
+
+EDITOR = 'editor'
+SHOWON = 'showon'
+EDITOR_GROUP_DESC =\
+     "Specifying who can add/edit/delete events on this calendar"
+SHOWON_GROUP_DESC =\
+    "Specifying the groups whose members have the showon permissions" +\
+    " on this calendar"
+ADMIN_GROUP_NAME = 'u_eventcal_support'
+
+
+def get_group_admin():
+    return ADMIN_GROUP_NAME
 
 
 def is_bot(campus_code):
@@ -21,6 +35,23 @@ def is_valid_campus_code(campus_code):
     return is_bot(campus_code) or is_sea(campus_code) or is_tac(campus_code)
 
 
+def is_editor(group_type):
+    # group_type: editor or showon in lower case
+    return group_type is not None and group_type == EDITOR
+
+
+def is_showon(group_type):
+    # group_type: editor or showon in lower case
+    return group_type is not None and group_type == SHOWON
+
+
+def get_group_desc(group_type):
+    if is_editor(group_type):
+        return EDITOR_GROUP_DESC
+    else:
+        return SHOWON_GROUP_DESC
+
+
 class TrumbaCalendar(models.Model):
     SEA_CAMPUS_CODE = 'sea'
     BOT_CAMPUS_CODE = 'bot'
@@ -30,12 +61,28 @@ class TrumbaCalendar(models.Model):
         (BOT_CAMPUS_CODE, 'Bothell'),
         (TAC_CAMPUS_CODE, 'Tacoma')
         )
-    calendarid = models.PositiveIntegerField(primary_key=True)
+    calendarid = models.PositiveIntegerField()
     campus = models.CharField(max_length=3,
                               choices=CAMPUS_CHOICES,
-                              default=SEA_CAMPUS_CODE
-                              )
-    name = models.CharField(max_length=500)
+                              default=SEA_CAMPUS_CODE)
+    name = models.CharField(max_length=196, default=None)
+
+    def get_group_admin(self):
+        return get_group_admin()
+
+    def get_group_desc(self, group_type):
+        # group_type: editor or showon in lower case
+        return get_group_desc(group_type)
+
+    def get_group_name(self, group_type):
+        # group_type: editor or showon in lower case
+        return "u_eventcal_{0}_{1}-{3}".format(super.campus,
+                                               super.calendarid,
+                                               group_type)
+
+    def get_group_title(self, group_type):
+        # group_type: editor or showon in lower case
+        return "{0} calendar {1} group".format(super.name, group_type)
 
     def is_bot(self):
         return is_bot(self.campus)
@@ -46,140 +93,33 @@ class TrumbaCalendar(models.Model):
     def is_tac(self):
         return is_tac(self.campus)
 
+    def add_permission(self, permission):
+        self.permissions.append(permission)
+
+    def to_json(self):
+        perm_json = []
+        for perm in self.permissions:
+            perm_json.append(perm.to_json())
+        return {'calendarid': self.calendarid,
+                'campus': self.campus,
+                'name': self.name,
+                'permissions': perm_json}
+
     def __eq__(self, other):
         return self.calendarid == other.calendarid
 
     def __lt__(self, other):
-        return self.campus == other.campus and\
-            self.name < other.name
+        return (self.campus == other.campus and
+                self.name < other.name)
 
     def __str__(self):
-        return "{name: %s, campus: %s, calendarid: %s}" % (
-            self.name, self.campus, self.calendarid)
-
-    def __unicode__(self):
-        return u'{name: %s, campus: %s, calendarid: %s}' % (
-            self.name, self.campus, self.calendarid)
-
-
-def is_editor_group(gtype):
-    return gtype is not None and gtype == UwcalGroup.GTYEP_EDITOR
-
-
-def is_showon_group(gtype):
-    return gtype is not None and gtype == UwcalGroup.GTYEP_SHOWON
-
-
-def make_group_name(campus, calendarid, gtype):
-    return "u_eventcal_%s_%s-%s" % (campus, calendarid, gtype)
-
-
-def make_group_title(calendar_name, gtype):
-    return "%s calendar %s group" % (calendar_name, gtype)
-
-
-editor_group_desc =\
-    "Specifying the editors who can add/edit/delete events on this calendar"
-showon_group_desc =\
-    "Specifying the editor groups whose members have the showon permissions" +\
-    " on this calendar"
-
-
-def make_group_desc(gtype):
-    if is_editor_group(gtype):
-        return editor_group_desc
-    else:
-        return showon_group_desc
-
-
-class UwcalGroup(models.Model):
-    GTYEP_EDITOR = 'editor'
-    GTYEP_SHOWON = 'showon'
-    ADMIN_GROUP_NAME = 'u_eventcal_support'
-    calendar = models.ForeignKey(TrumbaCalendar)
-    gtype = models.CharField(max_length=6)
-    uwregid = models.CharField(max_length=32, db_index=True, unique=True)
-    name = models.CharField(max_length=64, db_index=True, unique=True)
-    title = models.CharField(max_length=256)
-    description = models.CharField(max_length=500, null=True)
-    lastverified = models.DateTimeField(null=True)
+        return json.dumps(self.to_json())
 
     def __init__(self, *args, **kwargs):
-        super(UwcalGroup, self).__init__(*args, **kwargs)
-
-        if self.name is None or len(self.name) == 0:
-            self.name = make_group_name(self.calendar.campus,
-                                        self.calendar.calendarid,
-                                        self.gtype)
-
-        if self.title is None or len(self.title) == 0:
-            self.title = make_group_title(self.calendar.name,
-                                          self.gtype)
-
-        if self.description is None or len(self.description) == 0:
-            self.description = make_group_desc(self.gtype)
-
-    def get_calendarid(self):
-        return self.calendar.calendarid
-
-    def get_campus_code(self):
-        return self.calendar.campus
-
-    def has_regid(self):
-        return self.uwregid is not None and len(self.uwregid) == 32
-
-    def is_editor_group(self):
-        return is_editor_group(self.gtype)
-
-    def is_showon_group(self):
-        return is_showon_group(self.gtype)
-
-    def set_lastverified(self):
-        self.lastverified = datetime.now()
-
-    def __eq__(self, other):
-        return self.calendar == other.calendar and self.gtype == other.gtype
-
-    def __str__(self):
-        return "{uwregid: %s, name: %s, title: %s, description: %s}" % (
-            self.uwregid, self.name, self.title, self.description)
-
-    def __unicode__(self):
-        return u'{uwregid: %s, name: %s, title: %s, description: %s}' % (
-            self.uwregid, self.name, self.title, self.description)
-
-
-def is_edit_permission(level):
-    return level is not None and level == Permission.EDIT
-
-
-def is_showon_permission(level):
-    return level is not None and level == Permission.SHOWON
-
-
-def is_publish_permission(level):
-    return level is not None and level == Permission.PUBLISH
-
-
-def is_republish_permission(level):
-    return level is not None and level == Permission.REPUBLISH
-
-
-def is_view_permission(level):
-    return level is not None and level == Permission.VIEW
-
-
-def is_higher_permission(level1, level2):
-    """
-    Return True if the level1 is higher than level2
-    """
-    return (is_publish_permission(level1) and
-            not is_publish_permission(level2) or
-            (is_edit_permission(level1) and
-             not is_publish_permission(level2) and
-             not is_edit_permission(level2)) or
-            (is_showon_permission(level1) and
-             is_view_permission(level2)))
+        super(TrumbaCalendar, self).__init__(*args, **kwargs)
+        self.permissions = []
+        # Expect a list of Permission objects sorted by
+        # descending level and ascending uwnetid
 
 
 class Permission(models.Model):
@@ -194,56 +134,79 @@ class Permission(models.Model):
                      (REPUBLISH, 'Can view, edit and republish'),
                      (SHOWON, 'Can view and show on'),
                      (VIEW, 'Can view content'),
-                     (NONE, 'None')
-                     )
-    calendarid = models.PositiveIntegerField()
-    campus = models.CharField(max_length=3)
-    uwnetid = models.CharField(max_length=16)
-    name = models.CharField(max_length=64)
-    level = models.CharField(max_length=6,
-                             choices=LEVEL_CHOICES,
-                             default=VIEW)
+                     (NONE, 'None'))
+    calendar = models.ForeignKey(TrumbaCalendar)
+    uwnetid = models.CharField(max_length=32)
+    name = models.CharField(max_length=96, default=None)
+    level = models.CharField(max_length=6, choices=LEVEL_CHOICES, default=VIEW)
+
+    def get_calendarid(self):
+        return self.calendar.calendarid
+
+    def get_campus_code(self):
+        return self.calendar.campus
 
     def get_trumba_userid(self):
-        return "%s@washington.edu" % self.uwnetid
-
-    def is_publish(self):
-        return is_publish_permission(self.level)
-
-    def is_edit(self):
-        return is_edit_permission(self.level) or self.is_publish()
-
-    def is_showon(self):
-        return is_showon_permission(self.level) or\
-            is_republish_permission(self.level)
-
-    def is_gt_level(self, perm_level):
-        return is_higher_permission(self.level, perm_level)
+        return "{0}@washington.edu".format(self.uwnetid)
 
     def is_bot(self):
-        return is_bot(self.campus)
+        return self.calendar.is_bot()
 
     def is_sea(self):
-        return is_sea(self.campus)
+        return self.calendar.is_sea()
 
     def is_tac(self):
-        return is_tac(self.campus)
+        return self.calendar.is_tac()
+
+    def is_edit(self):
+        return self.level is not None and self.level == Permission.EDIT
+
+    def is_showon(self):
+        return self.level is not None and self.level == Permission.SHOWON
+
+    def is_publish(self):
+        return self.level is not None and self.level == Permission.PUBLISH
+
+    def is_republish(self):
+        return self.level is not None and self.level == Permission.REPUBLISH
+
+    def is_view(self):
+        return self.level is not None and self.level == Permission.VIEW
+
+    def is_higher_permission(self, level):
+        # Return True if self.level is higher than the given level
+        return (self.is_publish() and
+                level != Permission.PUBLISH or
+                self.is_edit() and
+                level != Permission.PUBLISH and
+                level != Permission.EDIT or
+                self.is_showon() and
+                level == Permission.VIEW)
+
+    def in_editor_group(self):
+        return self.is_edit() or self.is_publish()
+
+    def in_showon_group(self):
+        return self.is_showon() or self.is_republish()
+
+    def to_json(self):
+        return {'uwnetid': self.uwnetid,
+                'name': self.name,
+                'level': self.level}
 
     def __eq__(self, other):
-        return self.calendarid == other.calendarid and\
-            self.uwnetid == other.uwnetid and\
-            self.name == other.name and self.level == other.level
+        return (self.calendar == other.calendar and
+                self.uwnetid == other.uwnetid and
+                self.name == other.name and self.level == other.level)
 
     def __lt__(self, other):
-        return self.calendarid == other.calendarid and\
-            (is_higher_permission(self.level, other.level) or
-             self.level == other.level and
-             self.uwnetid < other.uwnetid)
+        return (self.calendar == other.calendar and
+                (self.is_higher_permission(other.level) or
+                 self.level == other.level and
+                 self.uwnetid < other.uwnetid))
 
     def __str__(self):
-        return "{calendarid: %s, campus: %s, uwnetid: %s, level: %s}" % (
-            self.calendarid, self.campus, self.uwnetid, self.level)
+        return json.dumps(self.to_json())
 
-    def __unicode__(self):
-        return u'{calendarid: %s, campus: %s, uwnetid: %s, level: %s}' % (
-            self.calendarid, self.campus, self.uwnetid, self.level)
+    def __init__(self, *args, **kwargs):
+        super(Permission, self).__init__(*args, **kwargs)

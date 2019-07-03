@@ -27,8 +27,8 @@ class TrumbaTestAccounts(TestCase):
         self.assertEqual(
             _make_add_account_url('Margaret Murray',
                                   'murray4'),
-            "%sName=%s&Email=%s@washington.edu&Password=" % (
-                ADD_ACC_URL, "Margaret%20Murray", 'murray4'))
+            (ADD_ACC_URL + "Name=Margaret%20Murray&" +
+             "Email=murray4@washington.edu&Password="))
 
     def test_add_editor_error_cases(self):
         self.assertRaises(AccountNameEmpty,
@@ -46,8 +46,7 @@ class TrumbaTestAccounts(TestCase):
 
     def test_make_del_account_url(self):
         self.assertEqual(_make_del_account_url('murray4'),
-                         "%sEmail=%s@washington.edu" % (DEL_ACC_URL,
-                                                        'murray4'))
+                         (DEL_ACC_URL + "Email=murray4@washington.edu"))
 
     def test_delete_editor_normal_cases(self):
         self.assertTrue(delete_editor('test10'))
@@ -62,8 +61,8 @@ class TrumbaTestAccounts(TestCase):
     def test_make_set_permissions_url(self):
         self.assertEqual(
             _make_set_permissions_url(1, 'test10', 'EDIT'),
-            "%sCalendarID=%s&Email=%s@washington.edu&Level=%s" % (
-                SET_PERM_URL, 1, 'test10', 'EDIT'))
+            (SET_PERM_URL + "CalendarID=1&Email=test10@washington.edu" +
+             "&Level=EDIT"))
 
     def test_set_sea_permissions_error_cases(self):
         self.assertRaises(AccountNotExist,
