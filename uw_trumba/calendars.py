@@ -70,15 +70,17 @@ def _extract_cals(campus, resp_fragment, calendar_dict, parent):
                 "InvalidCalendarId, {0} skipped!".format(record))
             continue
 
-        trumba_cal = TrumbaCalendar(calendarid=record['ID'], campus=campus)
+        trumba_cal = TrumbaCalendar(calendarid=int(record['ID']),
+                                    campus=campus)
         if parent is None:
-            trumba_cal.name = record['Name']
+            trumba_cal.name = record.get('Name')
         else:
-            trumba_cal.name = "{0} >> {1}".format(parent, record['Name'])
+            trumba_cal.name = "{0} >> {1}".format(parent, record.get('Name'))
 
         get_cal_permissions(trumba_cal)
         calendar_dict[trumba_cal.calendarid] = trumba_cal
-        if (record['ChildCalendars'] is not None and
+
+        if (record.get('ChildCalendars') is not None and
                 len(record['ChildCalendars']) > 0):
             _extract_cals(campus,
                           record['ChildCalendars'],
