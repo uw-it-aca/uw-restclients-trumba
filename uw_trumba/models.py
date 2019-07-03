@@ -76,13 +76,13 @@ class TrumbaCalendar(models.Model):
 
     def get_group_name(self, group_type):
         # group_type: editor or showon in lower case
-        return "u_eventcal_{0}_{1}-{3}".format(super.campus,
-                                               super.calendarid,
+        return "u_eventcal_{0}_{1}-{2}".format(self.campus,
+                                               self.calendarid,
                                                group_type)
 
     def get_group_title(self, group_type):
         # group_type: editor or showon in lower case
-        return "{0} calendar {1} group".format(super.name, group_type)
+        return "{0} calendar {1} group".format(self.name, group_type)
 
     def is_bot(self):
         return is_bot(self.campus)

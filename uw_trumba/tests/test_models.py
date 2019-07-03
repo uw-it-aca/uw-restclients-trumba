@@ -30,6 +30,17 @@ class TestModels(TestCase):
                                          'campus': 'sea',
                                          'permissions': []})
         self.assertIsNotNone(str(cal))
+        self.assertEqual(cal.get_group_admin(), "u_eventcal_support")
+        self.assertIsNotNone(cal.get_group_desc('editor'))
+        self.assertIsNotNone(cal.get_group_desc('showon'))
+        self.assertEqual(cal.get_group_name('editor'),
+                         "u_eventcal_sea_1-editor")
+        self.assertEqual(cal.get_group_name('showon'),
+                         "u_eventcal_sea_1-showon")
+        self.assertEqual(cal.get_group_title('editor'),
+                         "CampusEvents calendar editor group")
+        self.assertEqual(cal.get_group_title('showon'),
+                         "CampusEvents calendar showon group")
         cal2 = TrumbaCalendar(calendarid=2,
                               campus='sea',
                               name='CasEvents')
@@ -69,6 +80,7 @@ class TestModels(TestCase):
                                             'name': None,
                                             'uwnetid': 'aaa'})
         self.assertIsNotNone(str(editor))
+        self.assertTrue(editor == editor)
         cal.add_permission(editor)
         self.assertEqual(cal.to_json(),
                          {'calendarid': 1,
@@ -82,3 +94,4 @@ class TestModels(TestCase):
                           level='SHOWON')
         self.assertTrue(perm.is_higher_permission('VIEW'))
         self.assertTrue(perm.in_showon_group())
+        self.assertFalse(perm == editor)
