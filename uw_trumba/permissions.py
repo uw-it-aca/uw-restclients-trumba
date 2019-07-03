@@ -98,13 +98,13 @@ def _extract_uwnetid(email):
 
 def _load_permissions(calendar, resp_fragment, permission_list):
     for record in resp_fragment:
-        if not _is_valid_email(record['Email']):
-            # skip the non UW users
+        if not _is_valid_email(record.get('Email')):
             continue
+            # skip the non UW users
         perm = Permission(calendar=calendar,
                           uwnetid=_extract_uwnetid(record['Email']),
-                          level=record['Level'],
-                          name=str(record['Name']))
+                          level=record.get('Level'),
+                          name=record.get('Name'))
         permission_list.append(perm)
 
 
@@ -114,13 +114,14 @@ def _check_err(data):
     Check possible error code returned in the response body
     raise the coresponding exceptions
     """
-    if data['d'] is None:
+    if data.get('d') is None:
         raise NoDataReturned()
-    if data['d']['Messages'] is None:
+
+    if data['d'].get('Messages') is None:
         return
 
     msg = data['d']['Messages']
-    if len(msg) == 0 or msg[0]['Code'] is None:
+    if len(msg) == 0 or msg[0].get('Code') is None:
         raise UnknownError()
 
     code = int(msg[0]['Code'])
@@ -130,5 +131,5 @@ def _check_err(data):
         raise CalendarOwnByDiffAccount()
     else:
         logger.warn("Unexpected Error Code: {0} {1}".format(
-                code, msg[0]['Description']))
+                code, msg[0].get('Description')))
         raise UnexpectedError()
