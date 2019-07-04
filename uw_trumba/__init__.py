@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_calendar_by_name(calendar_name):
-    url = "/calendars/%s.ics" % calendar_name
+    url = "/calendars/{0}.ics".format(calendar_name)
 
     response = TrumbaCalendar_DAO().getURL(url)
 
@@ -37,28 +37,29 @@ def get_calendar_by_name(calendar_name):
 
 def _log_xml_resp(campus, url, response):
     if response.status == 200 and response.data is not None:
-        logger.debug("%s %s ==status==> %s" % (campus, url, response.status))
+        logger.debug("{0} {1} ==status==> {2}".format(
+                campus, url, response.status))
         root = etree.fromstring(response.data)
         resp_msg = ''
         for el in root.iterchildren():
             resp_msg += str(el.attrib)
-        logger.debug("%s %s ==message==> %s" % (campus, url, resp_msg))
+        logger.debug("{0} {1} ==message==> {2}".format(campus, url, resp_msg))
     else:
-        logger.error("%s %s ==error==> %s %s" % (campus, url,
-                                                 response.status,
-                                                 response.reason))
+        logger.error("{0} {1} ==error==> {2} {3}".format(campus, url,
+                                                         response.status,
+                                                         response.reason))
 
 
 def _log_json_resp(campus, url, body, response):
     if response.status == 200 and response.data is not None:
-        logger.debug("%s %s %s ==status==> %s" % (campus, url, body,
-                                                  response.status))
-        logger.debug("%s %s %s ==data==> %s" % (campus, url, body,
-                                                str(response.data)))
+        logger.debug("{0} {1} {2} ==status==> {3}".format(campus, url, body,
+                                                          response.status))
+        logger.debug("{0} {1} {2} ==data==> {3}".format(campus, url, body,
+                                                        str(response.data)))
     else:
-        logger.error("%s %s %s ==error==> %s %s" % (campus, url, body,
-                                                    response.status,
-                                                    response.reason))
+        logger.error("{0} {1} {2} ==error==> {3} {4}".format(campus, url, body,
+                                                             response.status,
+                                                             response.reason))
 
 
 def get_bot_resource(url):

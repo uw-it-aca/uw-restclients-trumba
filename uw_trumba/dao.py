@@ -25,14 +25,14 @@ class TrumbaSea_DAO(DAO):
     def _edit_mock_response(self, method, url, headers, body, response):
         if "POST" == method or "PUT" == method:
             if response.status != 400:
-                path = "%s/resources/%s/file%s.%s" % (
+                path = "{0}/resources/{1}/file{2}.{3}".format(
                     abspath(dirname(__file__)), self.service_name(),
                     url, method.title())
                 try:
                     url = url + "." + method.title()
                     url = url + "_" + urlencode(json.loads(body))
                     url = re.sub(r'[\?|<>=:*,;+&"@$]', '_', url)
-                    second_path = "%s/resources/%s/file%s" % (
+                    second_path = "{0}/resources/{1}/file{2}".format(
                         abspath(dirname(__file__)), self.service_name(),
                         url)
                     handle = open(second_path)

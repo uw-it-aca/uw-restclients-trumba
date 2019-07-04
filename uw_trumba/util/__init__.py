@@ -1,7 +1,6 @@
 from restclients_core.util.decorators import use_mock
-import sys
-from uw_trumba.dao import TrumbaCalendar_DAO, TrumbaSea_DAO, TrumbaBot_DAO,\
-                            TrumbaTac_DAO
+from uw_trumba.dao import (
+    TrumbaCalendar_DAO, TrumbaSea_DAO, TrumbaBot_DAO, TrumbaTac_DAO)
 
 
 fdao_trumba_override = use_mock(TrumbaCalendar_DAO())
