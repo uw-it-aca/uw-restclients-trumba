@@ -10,9 +10,10 @@ class TestCalendars(TestCase):
 
         self.assertTrue(cals.exists('bot'))
 
-        self.assertEquals(cals.total_calendars('bot'), 4)
+        self.assertEquals(cals.total_calendars('bot'), 3)
         self.assertEquals(cals.total_calendars('sea'), 10)
         self.assertEquals(cals.total_calendars('tac'), 1)
+
 
         sorted_cals = cals.get_campus_calendars('sea')
         self.assertEqual(len(sorted_cals), 10)
@@ -36,6 +37,7 @@ class TestCalendars(TestCase):
 
         self.assertIsNone(cals.get_campus_calendars('sss'))
         self.assertIsNone(cals.get_calendar('sea', 21))
+        self.assertIsNone(cals.get_calendar('sss', 11321))
 
         cals.campus_calendars['bot'] = {}
         self.assertFalse(cals.exists('bot'))
