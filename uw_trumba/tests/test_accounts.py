@@ -4,11 +4,10 @@ from restclients_core.exceptions import DataFailureException
 from uw_trumba.account import _make_add_account_url,\
     add_editor, _make_del_account_url, delete_editor,\
     _make_set_permissions_url, set_bot_permissions, set_sea_permissions,\
-    set_tac_permissions, set_sea_editor, set_sea_showon, set_sea_none,\
-    set_bot_editor, set_bot_showon, set_bot_none,\
-    set_tac_editor, set_tac_showon, set_tac_none,\
+    set_tac_permissions, set_perm_editor, set_perm_showon, set_perm_none,\
     _is_editor_added, _is_editor_deleted, _is_permission_set,\
     _check_err
+from uw_trumba.models import TrumbaCalendar
 from uw_trumba.exceptions import AccountNameEmpty, AccountNotExist,\
     AccountUsedByDiffUser, CalendarNotExist, CalendarOwnByDiffAccount,\
     InvalidEmail, InvalidPermissionLevel, FailedToClosePublisher,\
@@ -74,9 +73,10 @@ class TrumbaTestAccounts(TestCase):
     def test_set_sea_permissions_normal_cases(self):
         self.assertTrue(set_sea_permissions(1, 'test10', 'SHOWON'))
         self.assertTrue(set_sea_permissions(1, 'test10', 'EDIT'))
-        self.assertTrue(set_sea_editor(1, 'test10'))
-        self.assertTrue(set_sea_showon(1, 'test10'))
-        self.assertTrue(set_sea_none(1, 'test10'))
+        cal = TrumbaCalendar(calendarid=1, campus='sea')
+        self.assertTrue(set_perm_editor(cal, 'test10'))
+        self.assertTrue(set_perm_showon(cal, 'test10'))
+        self.assertTrue(set_perm_none(cal, 'test10'))
 
     def test_is_permission_set(self):
         self.assertTrue(_is_permission_set(1003))
@@ -154,9 +154,10 @@ class TrumbaTestAccounts(TestCase):
     def test_set_bot_permissions_normal_cases(self):
         self.assertTrue(set_bot_permissions(2, 'test10', 'SHOWON'))
         self.assertTrue(set_bot_permissions(2, 'test10', 'EDIT'))
-        self.assertTrue(set_bot_editor(2, 'test10'))
-        self.assertTrue(set_bot_showon(2, 'test10'))
-        self.assertTrue(set_bot_none(2, 'test10'))
+        cal = TrumbaCalendar(calendarid=2, campus='bot')
+        self.assertTrue(set_perm_editor(cal, 'test10'))
+        self.assertTrue(set_perm_showon(cal, 'test10'))
+        self.assertTrue(set_perm_none(cal, 'test10'))
 
     def test_set_tac_permissions_error_cases(self):
         self.assertRaises(AccountNotExist,
@@ -168,6 +169,7 @@ class TrumbaTestAccounts(TestCase):
     def test_set_tac_permissions_normal_cases(self):
         self.assertTrue(set_tac_permissions(3, 'test10', 'SHOWON'))
         self.assertTrue(set_tac_permissions(3, 'test10', 'EDIT'))
-        self.assertTrue(set_tac_editor(3, 'test10'))
-        self.assertTrue(set_tac_showon(3, 'test10'))
-        self.assertTrue(set_tac_none(3, 'test10'))
+        cal = TrumbaCalendar(calendarid=3, campus='tac')
+        self.assertTrue(set_perm_editor(cal, 'test10'))
+        self.assertTrue(set_perm_showon(cal, 'test10'))
+        self.assertTrue(set_perm_none(cal, 'test10'))
