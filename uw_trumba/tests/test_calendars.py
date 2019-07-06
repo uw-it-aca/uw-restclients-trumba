@@ -1,9 +1,15 @@
 from unittest import TestCase
-from restclients_core.exceptions import DataFailureException
-from uw_trumba.calendars import Calendars, _is_valid_calendarid
+from uw_trumba.calendars import (
+    Calendars, _is_valid_calendarid, get_campus_calenders)
 
 
 class TestCalendars(TestCase):
+
+    def test_get_campus_calenders(self):
+        self.assertIsNotNone(get_campus_calenders('sea'))
+        self.assertIsNotNone(get_campus_calenders('bot'))
+        self.assertIsNotNone(get_campus_calenders('tac'))
+        self.assertIsNone(get_campus_calenders('sss'))
 
     def test_load(self):
         cals = Calendars()

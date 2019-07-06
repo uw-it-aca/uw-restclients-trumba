@@ -2,14 +2,26 @@ from unittest import TestCase
 from restclients_core.exceptions import DataFailureException
 from uw_trumba.models import TrumbaCalendar
 from uw_trumba.permissions import (
-    Permissions, _create_get_perm_body, _check_err,
-    _extract_uwnetid, _is_valid_email)
+    Permissions, _create_req_body, _check_err,
+    get_permissions, _extract_uwnetid, _is_valid_email)
 from uw_trumba.exceptions import (
     TrumbaException, CalendarNotExist, CalendarOwnByDiffAccount,
     NoDataReturned, UnknownError, UnexpectedError)
 
 
 class TestPermissions(TestCase):
+
+    def test_get_permissions(self):
+        cal = TrumbaCalendar(calendarid=10000, campus='sea')
+        self.assertRaises(DataFailureException, get_permissions, cal)
+        cal = TrumbaCalendar(calendarid=1, campus='sea')
+        self.assertIsNotNone(get_permissions(cal))
+
+        cal = TrumbaCalendar(calendarid=2, campus='bot')
+        self.assertIsNotNone(get_permissions(cal))
+
+        cal = TrumbaCalendar(calendarid=3, campus='tac')
+        self.assertIsNotNone(get_permissions(cal))
 
     def test_get_cal_permissions(self):
         p_m = Permissions()
@@ -55,7 +67,7 @@ class TestPermissions(TestCase):
         self.assertIsNone(_check_err({"d": {"Messages": None}}))
 
     def test_create_body(self):
-        self.assertEqual(_create_get_perm_body(1), '{"CalendarID": 1}')
+        self.assertEqual(_create_req_body(1), '{"CalendarID": 1}')
 
     def test_is_valid_email(self):
         self.assertTrue(_is_valid_email('test@washington.edu'))

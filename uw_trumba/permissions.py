@@ -23,6 +23,38 @@ re_email = re.compile(r'[a-z][a-z0-9\-\_\.]{,127}@washington.edu')
 permissions_url = "/service/calendars.asmx/GetPermissions"
 
 
+def _create_req_body(calendar_id):
+    return json.dumps({'CalendarID': calendar_id})
+
+
+def get_permissions(calendar):
+    if calendar.is_bot():
+        resp = post_bot_resource(
+            permissions_url, _create_req_body(calendar.calendarid))
+    elif calendar.is_tac():
+        resp = post_tac_resource(
+            permissions_url, _create_req_body(calendar.calendarid))
+    else:
+        resp = post_sea_resource(
+            permissions_url, _create_req_body(calendar.calendarid))
+    request_id = "{0} {1} CalendarID:{2}".format(calendar.campus,
+                                                 permissions_url,
+                                                 calendar.calendarid)
+    return load_json(request_id, resp)
+
+
+def load_json(request_id, post_response):
+    if post_response.status != 200:
+        raise DataFailureException(request_id,
+                                   post_response.status,
+                                   post_response.reason)
+    if post_response.data is None:
+        raise NoDataReturned()
+    data = json.loads(post_response.data)
+    _check_err(data)
+    return data
+
+
 class Permissions:
 
     def __init__(self):
@@ -40,30 +72,17 @@ class Permissions:
         """
         :param calendar: a TrumbaCalendar object
         Set the calendar.permissions attribute with a dict of
-        {uwnetid, Permission}.
-        raise DataFailureException or a corresponding TrumbaException
-        if the request failed or an error code has been returned.
+        {uwnetid, Permission} and add uwnetids into self.account_set.
         """
         try:
-            self._process_resp(_get_post_response(calendar), calendar)
+            data = get_permissions(calendar)
+            if (data.get('d') is not None and
+                    data['d'].get('Users') is not None and
+                    len(data['d']['Users']) > 0):
+                self._load_permissions(calendar, data['d']['Users'])
         except Exception as ex:
             logger.error("get_cal_permissions on {0} ==> {1}".format(
                     calendar, str(ex)))
-
-    def _process_resp(self, post_response, calendar):
-        """
-        Load the calendar.permissions with a dict of {uwnetid, Permission}.
-        :except: DataFailureException
-        """
-        request_id = "{0} {1} CalendarID:{2}".format(calendar.campus,
-                                                     permissions_url,
-                                                     calendar.calendarid)
-        data = load_json(request_id, post_response)
-
-        if (data.get('d') is not None and
-                data['d'].get('Users') is not None and
-                len(data['d']['Users']) > 0):
-            self._load_permissions(calendar, data['d']['Users'])
 
     def _load_permissions(self, calendar, resp_fragment):
         for record in resp_fragment:
@@ -79,34 +98,6 @@ class Permissions:
 
     def total_accounts(self):
         return len(self.account_set)
-
-
-def load_json(request_id, post_response):
-    if post_response.status != 200:
-        raise DataFailureException(request_id,
-                                   post_response.status,
-                                   post_response.reason)
-    if post_response.data is None:
-        raise NoDataReturned()
-    data = json.loads(post_response.data)
-    _check_err(data)
-    return data
-
-
-def _create_get_perm_body(calendar_id):
-    return json.dumps({'CalendarID': calendar_id})
-
-
-def _get_post_response(calendar):
-    if calendar.is_bot():
-        return post_bot_resource(
-            permissions_url, _create_get_perm_body(calendar.calendarid))
-    elif calendar.is_tac():
-        return post_tac_resource(
-            permissions_url, _create_get_perm_body(calendar.calendarid))
-    else:
-        return post_sea_resource(
-            permissions_url, _create_get_perm_body(calendar.calendarid))
 
 
 def _is_valid_email(email):

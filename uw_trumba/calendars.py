@@ -22,6 +22,23 @@ def _is_valid_calendarid(calendarid):
     return re_cal_id.match(str(calendarid)) is not None
 
 
+def get_campus_calenders(campus):
+    """
+    :except DataFailureException: when the request failed
+    """
+    if is_bot(campus):
+        resp = post_bot_resource(calendarlist_url, "{}")
+    elif is_tac(campus):
+        resp = post_tac_resource(calendarlist_url, "{}")
+    elif is_sea(campus):
+        resp = post_sea_resource(calendarlist_url, "{}")
+    else:
+        logger.error("Invalid campus code: {0}".format(campus))
+        return None
+    request_id = "{0} {1}".format(campus, calendarlist_url)
+    return load_json(request_id, resp)
+
+
 class Calendars:
 
     def __init__(self):
@@ -37,39 +54,17 @@ class Calendars:
 
     def _load(self, campus):
         """
-        :except: DataFailureException if the underline request failed.
-        """
-        if is_bot(campus):
-            resp = post_bot_resource(calendarlist_url, "{}")
-        elif is_tac(campus):
-            resp = post_tac_resource(calendarlist_url, "{}")
-        else:
-            resp = post_sea_resource(calendarlist_url, "{}")
-        self._process_resp(resp, campus)
-
-    def _process_resp(self, response, campus):
-        """
         Load a dictionary of {calenderid, TrumbaCalendar} to
         the self.campus_calendars[campus]
+        :except: DataFailureException if the underline request failed.
         """
-        request_id = "{0} {1}".format(campus, calendarlist_url)
         calendar_dict = {}
-        data = load_json(request_id, response)
+        data = get_campus_calenders(campus)
         if (data['d']['Calendars'] is not None and
                 len(data['d']['Calendars']) > 0):
             self._extract_cals(campus, data['d']['Calendars'],
                                calendar_dict, None)
         self.campus_calendars[campus] = calendar_dict
-
-    def _not_shared_from_sea(self, campus, calendar_id):
-        """
-        return True if the calendar_id is not a Seattle calendar
-        share with Bothell or Tacoma
-        """
-        if is_sea(campus):
-            self.sea_calendar_ids.add(calendar_id)
-            return True
-        return calendar_id not in self.sea_calendar_ids
 
     def _extract_cals(self, campus, resp_fragment, calendar_dict, parent):
         """
@@ -105,6 +100,16 @@ class Calendars:
                                        record['ChildCalendars'],
                                        calendar_dict,
                                        trumba_cal.name)
+
+    def _not_shared_from_sea(self, campus, calendar_id):
+        """
+        return True if the calendar_id is not a Seattle calendar
+        share with Bothell or Tacoma
+        """
+        if is_sea(campus):
+            self.sea_calendar_ids.add(calendar_id)
+            return True
+        return calendar_id not in self.sea_calendar_ids
 
     def exists(self, campus_code):
         """
