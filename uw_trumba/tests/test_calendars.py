@@ -14,7 +14,6 @@ class TestCalendars(TestCase):
         self.assertEquals(cals.total_calendars('sea'), 10)
         self.assertEquals(cals.total_calendars('tac'), 1)
 
-
         sorted_cals = cals.get_campus_calendars('sea')
         self.assertEqual(len(sorted_cals), 10)
         self.assertEqual(sorted_cals[0].name, "Seattle calendar")
