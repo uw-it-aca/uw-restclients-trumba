@@ -7,6 +7,7 @@ class TestCalendars(TestCase):
 
     def test_load(self):
         cals = Calendars()
+
         self.assertTrue(cals.exists('bot'))
 
         self.assertEquals(cals.total_calendars('bot'), 4)
@@ -32,6 +33,13 @@ class TestCalendars(TestCase):
                                            ' child calendar3 >> Seattle',
                                            ' child-sub-calendar32 >> Seattle',
                                            ' child-sub-sub-calendar321'))
+
+        self.assertIsNone(cals.get_campus_calendars('sss'))
+        self.assertIsNone(cals.get_calendar('sea', 21))
+
+        cals.campus_calendars['bot'] = {}
+        self.assertFalse(cals.exists('bot'))
+        self.assertEquals(cals.total_calendars('bot'), 0)
 
     def test_is_valid_calendarid(self):
         self.assertTrue(_is_valid_calendarid(1))
