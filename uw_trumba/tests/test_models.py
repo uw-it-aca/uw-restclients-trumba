@@ -28,7 +28,7 @@ class TestModels(TestCase):
         self.assertEqual(cal.to_json(), {'calendarid': 1,
                                          'name': 'CampusEvents',
                                          'campus': 'sea',
-                                         'permissions': []})
+                                         'permissions': {}})
         self.assertIsNotNone(str(cal))
         self.assertEqual(cal.get_group_admin(), "u_eventcal_support")
         self.assertIsNotNone(cal.get_group_desc('editor'))
@@ -59,8 +59,6 @@ class TestModels(TestCase):
         editor = Permission(calendar=cal,
                             uwnetid='aaa',
                             level='EDIT')
-        self.assertEqual(editor.get_calendarid(), 1)
-        self.assertEqual(editor.get_campus_code(), 'sea')
         self.assertEqual(editor.get_trumba_userid(), "aaa@washington.edu")
         self.assertTrue(editor.is_edit())
         self.assertFalse(editor.is_showon())
@@ -73,11 +71,8 @@ class TestModels(TestCase):
         self.assertFalse(editor.is_higher_permission('PUBLISH'))
         self.assertTrue(editor.in_editor_group())
         self.assertFalse(editor.in_showon_group())
-        self.assertFalse(editor.is_bot())
-        self.assertFalse(editor.is_tac())
-        self.assertTrue(editor.is_sea())
         self.assertEqual(editor.to_json(), {'level': 'EDIT',
-                                            'name': None,
+                                            'display_name': None,
                                             'uwnetid': 'aaa'})
         self.assertIsNotNone(str(editor))
         self.assertTrue(editor == editor)
@@ -86,9 +81,9 @@ class TestModels(TestCase):
                          {'calendarid': 1,
                           'campus': 'sea',
                           'name': 'CampusEvents',
-                          'permissions': [{'level': 'EDIT',
-                                           'name': None,
-                                           'uwnetid': 'aaa'}]})
+                          'permissions': {'aaa': {'level': 'EDIT',
+                                                  'display_name': None,
+                                                  'uwnetid': 'aaa'}}})
         perm = Permission(calendar=cal,
                           uwnetid='aaa',
                           level='SHOWON')

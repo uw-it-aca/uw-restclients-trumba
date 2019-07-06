@@ -2,7 +2,7 @@ from unittest import TestCase
 from restclients_core.exceptions import DataFailureException
 from uw_trumba.models import TrumbaCalendar
 from uw_trumba.permissions import (
-    get_cal_permissions, _create_get_perm_body, _check_err,
+    Permissions, _create_get_perm_body, _check_err,
     _extract_uwnetid, _is_valid_email)
 from uw_trumba.exceptions import (
     TrumbaException, CalendarNotExist, CalendarOwnByDiffAccount,
@@ -12,14 +12,20 @@ from uw_trumba.exceptions import (
 class TestPermissions(TestCase):
 
     def test_get_cal_permissions(self):
+        p_m = Permissions()
         cal = TrumbaCalendar(calendarid=1,
                              campus='sea',
                              name='Seattle calendar')
-        get_cal_permissions(cal)
-        perms = cal.permissions
-        self.assertEqual(len(perms), 3)
-        self.assertTrue(perms[0].is_higher_permission(perms[1].level))
-        self.assertTrue(perms[1].is_higher_permission(perms[2].level))
+        p_m.get_cal_permissions(cal)
+        self.assertEqual(p_m.total_accounts(), 3)
+        self.assertTrue(p_m.account_exists('dummyp'))
+        self.assertTrue(p_m.account_exists('dummye'))
+        self.assertTrue(p_m.account_exists('dummys'))
+        self.assertEqual(cal.permissions['dummyp'].uwnetid, 'dummyp')
+        self.assertTrue(cal.permissions['dummyp'].is_higher_permission(
+                cal.permissions['dummye'].level))
+        self.assertTrue(cal.permissions['dummye'].is_higher_permission(
+                cal.permissions['dummys'].level))
 
     def test_check_err(self):
         self.assertRaises(UnexpectedError,
@@ -49,8 +55,7 @@ class TestPermissions(TestCase):
         self.assertIsNone(_check_err({"d": {"Messages": None}}))
 
     def test_create_body(self):
-        self.assertEqual(_create_get_perm_body(1),
-                         '{"CalendarID": 1}')
+        self.assertEqual(_create_get_perm_body(1), '{"CalendarID": 1}')
 
     def test_is_valid_email(self):
         self.assertTrue(_is_valid_email('test@washington.edu'))
