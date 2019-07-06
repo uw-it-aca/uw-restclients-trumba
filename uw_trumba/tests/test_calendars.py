@@ -20,12 +20,15 @@ class TestCalendars(TestCase):
         self.assertEqual(sorted_cals[1].name,
                          "Seattle calendar >> Seattle child calendar1")
 
+        self.assertTrue(cals.has_calendar('sea', 1))
         trumba_cal = cals.get_calendar('sea', 1)
         self.assertEqual(trumba_cal.calendarid, 1)
         self.assertEqual(trumba_cal.campus, 'sea')
         self.assertEqual(trumba_cal.name, 'Seattle calendar')
-
-        self.assertTrue(cals.has_calendar('sea', 1))
+        perms = sorted(trumba_cal.permissions.values())
+        self.assertEqual(len(perms), 3)
+        self.assertEqual(perms[0].level, 'PUBLISH')
+        self.assertEqual(perms[2].level, 'SHOWON')
 
         trumba_cal1 = cals.get_calendar('sea', 11321)
         self.assertEqual(trumba_cal1.name,
