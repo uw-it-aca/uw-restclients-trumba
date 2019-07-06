@@ -23,38 +23,6 @@ re_email = re.compile(r'[a-z][a-z0-9\-\_\.]{,127}@washington.edu')
 permissions_url = "/service/calendars.asmx/GetPermissions"
 
 
-def _create_req_body(calendar_id):
-    return json.dumps({'CalendarID': calendar_id})
-
-
-def get_permissions(calendar):
-    if calendar.is_bot():
-        resp = post_bot_resource(
-            permissions_url, _create_req_body(calendar.calendarid))
-    elif calendar.is_tac():
-        resp = post_tac_resource(
-            permissions_url, _create_req_body(calendar.calendarid))
-    else:
-        resp = post_sea_resource(
-            permissions_url, _create_req_body(calendar.calendarid))
-    request_id = "{0} {1} CalendarID:{2}".format(calendar.campus,
-                                                 permissions_url,
-                                                 calendar.calendarid)
-    return load_json(request_id, resp)
-
-
-def load_json(request_id, post_response):
-    if post_response.status != 200:
-        raise DataFailureException(request_id,
-                                   post_response.status,
-                                   post_response.reason)
-    if post_response.data is None:
-        raise NoDataReturned()
-    data = json.loads(post_response.data)
-    _check_err(data)
-    return data
-
-
 class Permissions:
 
     def __init__(self):
@@ -75,7 +43,7 @@ class Permissions:
         {uwnetid, Permission} and add uwnetids into self.account_set.
         """
         try:
-            data = get_permissions(calendar)
+            data = _get_permissions(calendar)
             if (data.get('d') is not None and
                     data['d'].get('Users') is not None and
                     len(data['d']['Users']) > 0):
@@ -98,6 +66,26 @@ class Permissions:
 
     def total_accounts(self):
         return len(self.account_set)
+
+
+def _create_req_body(calendar_id):
+    return json.dumps({'CalendarID': calendar_id})
+
+
+def _get_permissions(calendar):
+    if calendar.is_bot():
+        resp = post_bot_resource(
+            permissions_url, _create_req_body(calendar.calendarid))
+    elif calendar.is_tac():
+        resp = post_tac_resource(
+            permissions_url, _create_req_body(calendar.calendarid))
+    else:
+        resp = post_sea_resource(
+            permissions_url, _create_req_body(calendar.calendarid))
+    request_id = "{0} {1} CalendarID:{2}".format(calendar.campus,
+                                                 permissions_url,
+                                                 calendar.calendarid)
+    return load_json(request_id, resp)
 
 
 def _is_valid_email(email):
@@ -133,3 +121,15 @@ def _check_err(data):
         logger.warn("Unexpected Error Code: {0} {1}".format(
                 code, msg[0].get('Description')))
         raise UnexpectedError()
+
+
+def load_json(request_id, post_response):
+    if post_response.status != 200:
+        raise DataFailureException(request_id,
+                                   post_response.status,
+                                   post_response.reason)
+    if post_response.data is None:
+        raise NoDataReturned()
+    data = json.loads(post_response.data)
+    _check_err(data)
+    return data

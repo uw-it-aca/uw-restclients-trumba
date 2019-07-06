@@ -18,27 +18,6 @@ calendarlist_url = "/service/calendars.asmx/GetCalendarList"
 re_cal_id = re.compile(r'[1-9]\d*')
 
 
-def _is_valid_calendarid(calendarid):
-    return re_cal_id.match(str(calendarid)) is not None
-
-
-def get_campus_calenders(campus):
-    """
-    :except DataFailureException: when the request failed
-    """
-    if is_bot(campus):
-        resp = post_bot_resource(calendarlist_url, "{}")
-    elif is_tac(campus):
-        resp = post_tac_resource(calendarlist_url, "{}")
-    elif is_sea(campus):
-        resp = post_sea_resource(calendarlist_url, "{}")
-    else:
-        logger.error("Invalid campus code: {0}".format(campus))
-        return None
-    request_id = "{0} {1}".format(campus, calendarlist_url)
-    return load_json(request_id, resp)
-
-
 class Calendars:
 
     def __init__(self):
@@ -59,7 +38,7 @@ class Calendars:
         :except: DataFailureException if the underline request failed.
         """
         calendar_dict = {}
-        data = get_campus_calenders(campus)
+        data = _get_campus_calenders(campus)
         if (data['d']['Calendars'] is not None and
                 len(data['d']['Calendars']) > 0):
             self._extract_cals(campus, data['d']['Calendars'],
@@ -136,3 +115,24 @@ class Calendars:
         if self.exists(campus_code):
             return len(self.get_campus_calendars(campus_code))
         return 0
+
+
+def _is_valid_calendarid(calendarid):
+    return re_cal_id.match(str(calendarid)) is not None
+
+
+def _get_campus_calenders(campus):
+    """
+    :except DataFailureException: when the request failed
+    """
+    if is_bot(campus):
+        resp = post_bot_resource(calendarlist_url, "{}")
+    elif is_tac(campus):
+        resp = post_tac_resource(calendarlist_url, "{}")
+    elif is_sea(campus):
+        resp = post_sea_resource(calendarlist_url, "{}")
+    else:
+        logger.error("Invalid campus code: {0}".format(campus))
+        return None
+    request_id = "{0} {1}".format(campus, calendarlist_url)
+    return load_json(request_id, resp)
