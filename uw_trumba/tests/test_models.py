@@ -19,6 +19,7 @@ class TestModels(TestCase):
         self.assertTrue(is_valid_campus_code('bot'))
 
     def test_trumba_calendar(self):
+        self.assertTrue(len(TrumbaCalendar.CAMPUS_CHOICES) == 3)
         cal = TrumbaCalendar(calendarid=1,
                              campus='sea',
                              name='CampusEvents')
