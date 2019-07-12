@@ -33,6 +33,7 @@ class TestPermissions(TestCase):
         self.assertTrue(p_m.account_exists('dummyp'))
         self.assertTrue(p_m.account_exists('dummye'))
         self.assertTrue(p_m.account_exists('dummys'))
+        self.assertEqual(len(cal.permissions), 3)
         self.assertEqual(cal.permissions['dummyp'].uwnetid, 'dummyp')
         self.assertTrue(cal.permissions['dummyp'].is_higher_permission(
                 cal.permissions['dummye'].level))
