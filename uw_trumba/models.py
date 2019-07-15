@@ -157,6 +157,16 @@ class Permission(models.Model):
         # Return True if self.level is edit or a higher permission
         return self.in_editor_group() or self.in_showon_group()
 
+    def is_higher_permission(self, level):
+        # Return True if self.level is higher than the given level
+        return (self.is_publish() and
+                level != Permission.PUBLISH or
+                self.is_edit() and
+                level != Permission.PUBLISH and
+                level != Permission.EDIT or
+                self.is_showon() and
+                level == Permission.VIEW)
+
     def set_edit(self):
         self.level = Permission.EDIT
 
@@ -183,7 +193,9 @@ class Permission(models.Model):
                 self.level == other.level)
 
     def __lt__(self, other):
-        return self.level < other.level and self.uwnetid < other.uwnetid
+        return (self.is_higher_permission(other.level) or
+                self.level == other.level and
+                self.uwnetid < other.uwnetid)
 
     def __str__(self):
         return json.dumps(self.to_json())

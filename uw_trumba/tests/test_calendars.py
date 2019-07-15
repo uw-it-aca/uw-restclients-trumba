@@ -33,8 +33,8 @@ class TestCalendars(TestCase):
         self.assertEqual(trumba_cal.name, 'Seattle calendar')
         perms = sorted(trumba_cal.permissions.values())
         self.assertEqual(len(perms), 3)
-        self.assertTrue(perms[0].is_edit())
-        self.assertTrue(perms[1].is_publish())
+        self.assertTrue(perms[0].is_publish())
+        self.assertTrue(perms[1].is_edit())
         self.assertTrue(perms[2].is_showon())
 
         trumba_cal1 = cals.get_calendar('sea', 11321)
