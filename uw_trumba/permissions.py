@@ -23,69 +23,69 @@ re_email = re.compile(r'[a-z][a-z0-9\-\_\.]{,127}@washington.edu')
 permissions_url = "/service/calendars.asmx/GetPermissions"
 
 
-def get_cal_permissions(calendar):
-    """
-    :param calendar: a TrumbaCalendar object
-    Set the calendar.permissions attribute with a list of Permission objects.
-    raise DataFailureException or a corresponding TrumbaException
-    if the request failed or an error code has been returned.
-    """
-    try:
-        calendar.permissions = _process_resp(
-            _get_post_response(calendar), calendar)
-    except Exception as ex:
-        logger.error("get_cal_permissions on {0} ==> {1}".format(
-                calendar, str(ex)))
+class Permissions:
+
+    def __init__(self):
+        self.account_set = set()
+        # a set of the uwnetids of all the existing accounts
+
+    def account_exists(self, uwnetid):
+        return uwnetid in self.account_set
+
+    def add_account(self, uwnetid):
+        if not self.account_exists(uwnetid):
+            self.account_set.add(uwnetid)
+
+    def get_cal_permissions(self, calendar):
+        """
+        :param calendar: a TrumbaCalendar object
+        Set the calendar.permissions attribute with a dict of
+        {uwnetid, Permission} and add uwnetids into self.account_set.
+        """
+        try:
+            data = _get_permissions(calendar)
+            if (data.get('d') is not None and
+                    data['d'].get('Users') is not None and
+                    len(data['d']['Users']) > 0):
+                self._load_permissions(calendar, data['d']['Users'])
+        except Exception as ex:
+            logger.error("get_cal_permissions on {0} ==> {1}".format(
+                    calendar, str(ex)))
+
+    def _load_permissions(self, calendar, resp_fragment):
+        for record in resp_fragment:
+            # skip the non UW users
+            if not _is_valid_email(record.get('Email')):
+                continue
+            netid = _extract_uwnetid(record['Email'])
+            perm = Permission(uwnetid=netid,
+                              level=record.get('Level'),
+                              display_name=record.get('Name'))
+            calendar.permissions[netid] = perm
+            self.add_account(netid)
+
+    def total_accounts(self):
+        return len(self.account_set)
 
 
-def _process_resp(post_response, calendar):
-    """
-    :return: a list of trumba.Permission objects
-             sorted by descending level and ascending uwnetid
-             None if error, [] if not exists
-    If the response is successful, process the response data
-    and load into the return objects
-    otherwise raise DataFailureException
-    """
-    request_id = "{0} {1} CalendarID:{2}".format(calendar.campus,
-                                                 permissions_url,
-                                                 calendar.calendarid)
-    data = load_json(request_id, post_response)
-
-    permission_list = []
-    if (data.get('d') is not None and data['d'].get('Users') is not None and
-            len(data['d']['Users']) > 0):
-        _load_permissions(calendar, data['d']['Users'], permission_list)
-
-    return sorted(permission_list)
-
-
-def load_json(request_id, post_response):
-    if post_response.status != 200:
-        raise DataFailureException(request_id,
-                                   post_response.status,
-                                   post_response.reason)
-    if post_response.data is None:
-        raise NoDataReturned()
-    data = json.loads(post_response.data)
-    _check_err(data)
-    return data
-
-
-def _create_get_perm_body(calendar_id):
+def _create_req_body(calendar_id):
     return json.dumps({'CalendarID': calendar_id})
 
 
-def _get_post_response(calendar):
+def _get_permissions(calendar):
     if calendar.is_bot():
-        return post_bot_resource(
-            permissions_url, _create_get_perm_body(calendar.calendarid))
+        resp = post_bot_resource(
+            permissions_url, _create_req_body(calendar.calendarid))
     elif calendar.is_tac():
-        return post_tac_resource(
-            permissions_url, _create_get_perm_body(calendar.calendarid))
+        resp = post_tac_resource(
+            permissions_url, _create_req_body(calendar.calendarid))
     else:
-        return post_sea_resource(
-            permissions_url, _create_get_perm_body(calendar.calendarid))
+        resp = post_sea_resource(
+            permissions_url, _create_req_body(calendar.calendarid))
+    request_id = "{0} {1} CalendarID:{2}".format(calendar.campus,
+                                                 permissions_url,
+                                                 calendar.calendarid)
+    return load_json(request_id, resp)
 
 
 def _is_valid_email(email):
@@ -94,18 +94,6 @@ def _is_valid_email(email):
 
 def _extract_uwnetid(email):
     return re.sub("@washington.edu", "", email)
-
-
-def _load_permissions(calendar, resp_fragment, permission_list):
-    for record in resp_fragment:
-        if not _is_valid_email(record.get('Email')):
-            continue
-            # skip the non UW users
-        perm = Permission(calendar=calendar,
-                          uwnetid=_extract_uwnetid(record['Email']),
-                          level=record.get('Level'),
-                          name=record.get('Name'))
-        permission_list.append(perm)
 
 
 def _check_err(data):
@@ -133,3 +121,15 @@ def _check_err(data):
         logger.warn("Unexpected Error Code: {0} {1}".format(
                 code, msg[0].get('Description')))
         raise UnexpectedError()
+
+
+def load_json(request_id, post_response):
+    if post_response.status != 200:
+        raise DataFailureException(request_id,
+                                   post_response.status,
+                                   post_response.reason)
+    if post_response.data is None:
+        raise NoDataReturned()
+    data = json.loads(post_response.data)
+    _check_err(data)
+    return data

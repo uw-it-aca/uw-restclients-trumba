@@ -88,16 +88,40 @@ def _make_set_permissions_url(calendar_id, userid, level):
         set_permission_url_prefix, calendar_id, userid, level)
 
 
-def set_bot_editor(calendar_id, userid):
-    return set_bot_permissions(calendar_id, userid, Permission.EDIT)
+def set_perm_editor(calendar, userid):
+    if calendar.is_bot():
+        return set_bot_permissions(calendar.calendarid,
+                                   userid, Permission.EDIT)
+    elif calendar.is_tac():
+        return set_tac_permissions(calendar.calendarid,
+                                   userid, Permission.EDIT)
+    else:
+        return set_sea_permissions(calendar.calendarid,
+                                   userid, Permission.EDIT)
 
 
-def set_bot_showon(calendar_id, userid):
-    return set_bot_permissions(calendar_id, userid, Permission.SHOWON)
+def set_perm_showon(calendar, userid):
+    if calendar.is_bot():
+        return set_bot_permissions(calendar.calendarid,
+                                   userid, Permission.SHOWON)
+    elif calendar.is_tac():
+        return set_tac_permissions(calendar.calendarid,
+                                   userid, Permission.SHOWON)
+    else:
+        return set_sea_permissions(calendar.calendarid,
+                                   userid, Permission.SHOWON)
 
 
-def set_bot_none(calendar_id, userid):
-    return set_bot_permissions(calendar_id, userid, Permission.NONE)
+def set_perm_none(calendar, userid):
+    if calendar.is_bot():
+        return set_bot_permissions(calendar.calendarid,
+                                   userid, Permission.NONE)
+    elif calendar.is_tac():
+        return set_tac_permissions(calendar.calendarid,
+                                   userid, Permission.NONE)
+    else:
+        return set_sea_permissions(calendar.calendarid,
+                                   userid, Permission.NONE)
 
 
 def set_bot_permissions(calendar_id, userid, level):
@@ -117,18 +141,6 @@ def set_bot_permissions(calendar_id, userid, level):
                          )
 
 
-def set_sea_editor(calendar_id, userid):
-    return set_sea_permissions(calendar_id, userid, Permission.EDIT)
-
-
-def set_sea_showon(calendar_id, userid):
-    return set_sea_permissions(calendar_id, userid, Permission.SHOWON)
-
-
-def set_sea_none(calendar_id, userid):
-    return set_sea_permissions(calendar_id, userid, Permission.NONE)
-
-
 def set_sea_permissions(calendar_id, userid, level):
     """
     :param calendar_id: an integer representing calendar ID
@@ -144,18 +156,6 @@ def set_sea_permissions(calendar_id, userid, level):
                          get_sea_resource(url),
                          _is_permission_set
                          )
-
-
-def set_tac_editor(calendar_id, userid):
-    return set_tac_permissions(calendar_id, userid, Permission.EDIT)
-
-
-def set_tac_showon(calendar_id, userid):
-    return set_tac_permissions(calendar_id, userid, Permission.SHOWON)
-
-
-def set_tac_none(calendar_id, userid):
-    return set_tac_permissions(calendar_id, userid, Permission.NONE)
 
 
 def set_tac_permissions(calendar_id, userid, level):

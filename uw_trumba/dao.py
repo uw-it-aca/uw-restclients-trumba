@@ -15,41 +15,27 @@ class TrumbaCalendar_DAO(DAO):
         return [abspath(os.path.join(dirname(__file__), "resources"))]
 
 
-class TrumbaSea_DAO(DAO):
+class TrumbaSea_DAO(TrumbaCalendar_DAO):
+
+    def is_mock(self):
+        return self.get_implementation().is_mock()
+
     def service_name(self):
         return 'trumba_sea'
 
-    def service_mock_paths(self):
-        return [abspath(os.path.join(dirname(__file__), "resources"))]
+    def _get_mock_file_path(self, url, method, body):
+        ret = "{0}.{1}".format(url, method.title())
+        if body != "{}":
+            ret = "{0}_{1}".format(ret, urlencode(json.loads(body)))
+        return ret
 
     def _edit_mock_response(self, method, url, headers, body, response):
-        if "POST" == method or "PUT" == method:
-            if response.status != 400:
-                path = "{0}/resources/{1}/file{2}.{3}".format(
-                    abspath(dirname(__file__)), self.service_name(),
-                    url, method.title())
-                try:
-                    url = url + "." + method.title()
-                    url = url + "_" + urlencode(json.loads(body))
-                    url = re.sub(r'[\?|<>=:*,;+&"@$]', '_', url)
-                    second_path = "{0}/resources/{1}/file{2}".format(
-                        abspath(dirname(__file__)), self.service_name(),
-                        url)
-                    handle = open(second_path)
-                    response.data = handle.read()
-                    response.status = 200
-                    return
-                except Exception:
-                    pass
-
-                try:
-                    handle = open(path)
-                    response.data = handle.read()
-                    response.status = 200
-                except IOError:
-                    response.status = 404
-        elif "DELETE" == method:
-            response.status = 200
+        if response.status == 404 and method != "GET":
+            alternative_url = self._get_mock_file_path(url, method, body)
+            backend = self.get_implementation()
+            new_resp = backend.load(method, alternative_url, headers, body)
+            response.status = new_resp.status
+            response.data = new_resp.data
 
 
 class TrumbaBot_DAO(TrumbaSea_DAO):

@@ -37,8 +37,6 @@ def get_calendar_by_name(calendar_name):
 
 def _log_xml_resp(campus, url, response):
     if response.status == 200 and response.data is not None:
-        logger.debug("{0} {1} ==status==> {2}".format(
-                campus, url, response.status))
         root = etree.fromstring(response.data)
         resp_msg = ''
         for el in root.iterchildren():
@@ -52,8 +50,6 @@ def _log_xml_resp(campus, url, response):
 
 def _log_json_resp(campus, url, body, response):
     if response.status == 200 and response.data is not None:
-        logger.debug("{0} {1} {2} ==status==> {3}".format(campus, url, body,
-                                                          response.status))
         logger.debug("{0} {1} {2} ==data==> {3}".format(campus, url, body,
                                                         str(response.data)))
     else:
