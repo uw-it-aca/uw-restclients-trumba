@@ -113,8 +113,8 @@ class TrumbaCalendar(models.Model):
 
 
 class Permission(models.Model):
-    PUBLISH = 'PUBLISH'
     EDIT = 'EDIT'
+    PUBLISH = 'PUBLISH'
     REPUBLISH = 'REPUBLISH'
     SHOWON = 'SHOWON'
     VIEW = 'VIEW'
@@ -147,21 +147,30 @@ class Permission(models.Model):
     def is_view(self):
         return self.level is not None and self.level == Permission.VIEW
 
-    def is_higher_permission(self, level):
-        # Return True if self.level is higher than the given level
-        return (self.is_publish() and
-                level != Permission.PUBLISH or
-                self.is_edit() and
-                level != Permission.PUBLISH and
-                level != Permission.EDIT or
-                self.is_showon() and
-                level == Permission.VIEW)
-
     def in_editor_group(self):
         return self.is_edit() or self.is_publish()
 
     def in_showon_group(self):
         return self.is_showon() or self.is_republish()
+
+    def is_showon_or_higher(self):
+        # Return True if self.level is edit or a higher permission
+        return self.in_editor_group() or self.in_showon_group()
+
+    def set_edit(self):
+        self.level = Permission.EDIT
+
+    def set_publish(self):
+        self.level = Permission.PUBLISH
+
+    def set_showon(self):
+        self.level = Permission.SHOWON
+
+    def set_republish(self):
+        self.level = Permission.REPUBLISH
+
+    def set_view(self):
+        self.level = Permission.VIEW
 
     def to_json(self):
         return {'uwnetid': self.uwnetid,
@@ -174,12 +183,22 @@ class Permission(models.Model):
                 self.level == other.level)
 
     def __lt__(self, other):
-        return (self.is_higher_permission(other.level) or
-                self.level == other.level and
-                self.uwnetid < other.uwnetid)
+        return self.level < other.level and self.uwnetid < other.uwnetid
 
     def __str__(self):
         return json.dumps(self.to_json())
 
     def __init__(self, *args, **kwargs):
         super(Permission, self).__init__(*args, **kwargs)
+
+
+def new_edit_permission(uwnetid, display_name=None):
+    return Permission(uwnetid=uwnetid,
+                      display_name=display_name,
+                      level=Permission.EDIT)
+
+
+def new_showon_permission(uwnetid, display_name=None):
+    return Permission(uwnetid=uwnetid,
+                      display_name=display_name,
+                      level=Permission.SHOWON)
