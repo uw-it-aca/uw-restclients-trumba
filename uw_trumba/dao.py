@@ -23,6 +23,12 @@ class TrumbaSea_DAO(TrumbaCalendar_DAO):
     def service_name(self):
         return 'trumba_sea'
 
+    def _get_basic_auth(self):
+        service = self.service_name().upper()
+        return "{0}:{1}".format(
+            self.get_service_setting("{0}_ID".format(service), ""),
+            self.get_service_setting("{0}_PSWD".format(service), ""))
+
     def _get_mock_file_path(self, url, method, body):
         ret = "{0}.{1}".format(url, method.title())
         if body != "{}":

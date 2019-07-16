@@ -1,4 +1,5 @@
 from unittest import TestCase
+from commonconf import override_settings
 from restclients_core.models import MockHTTP
 from uw_trumba.dao import (
     TrumbaSea_DAO, TrumbaBot_DAO, TrumbaTac_DAO)
@@ -16,6 +17,24 @@ class TestTrumbaDao(TestCase):
         self.assertTrue(TrumbaSea_DAO().is_mock())
         self.assertTrue(TrumbaBot_DAO().is_mock())
         self.assertTrue(TrumbaBot_DAO().is_mock())
+
+    @override_settings(RESTCLIENTS_TRUMBA_SEA_ID="ss",
+                       RESTCLIENTS_TRUMBA_SEA_PSWD="ppp")
+    def test_get_basic_auth(self):
+        self.assertEqual(TrumbaSea_DAO()._get_basic_auth(),
+                         "ss:ppp")
+
+    @override_settings(RESTCLIENTS_TRUMBA_BOT_ID="bb",
+                       RESTCLIENTS_TRUMBA_BOT_PSWD="ppp")
+    def test_get_basic_auth(self):
+        self.assertEqual(TrumbaBot_DAO()._get_basic_auth(),
+                         "bb:ppp")
+
+    @override_settings(RESTCLIENTS_TRUMBA_TAC_ID="tt",
+                       RESTCLIENTS_TRUMBA_TAC_PSWD="ppp")
+    def test_get_basic_auth(self):
+        self.assertEqual(TrumbaTac_DAO()._get_basic_auth(),
+                         "tt:ppp")
 
     def test_service_mock_paths(self):
         self.assertEqual(len(TrumbaSea_DAO().service_mock_paths()), 1)
