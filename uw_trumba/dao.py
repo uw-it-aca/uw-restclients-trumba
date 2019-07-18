@@ -1,10 +1,9 @@
-import logging
 import os
 import json
-import re
+from base64 import urlsafe_b64encode
 from os.path import abspath, dirname
-from restclients_core.dao import DAO
 from urllib.parse import urlencode
+from restclients_core.dao import DAO
 
 
 class TrumbaCalendar_DAO(DAO):
@@ -28,6 +27,12 @@ class TrumbaSea_DAO(TrumbaCalendar_DAO):
         return "{0}:{1}".format(
             self.get_service_setting("{0}_ID".format(service), ""),
             self.get_service_setting("{0}_PSWD".format(service), ""))
+
+    def _custom_headers(self, method, url, headers, body):
+        credentials = self._get_basic_auth().encode()
+        headers["Authorization"] = "Basic {0}".format(
+            urlsafe_b64encode(credentials).decode("ascii"))
+        return headers
 
     def _get_mock_file_path(self, url, method, body):
         ret = "{0}.{1}".format(url, method.title())

@@ -31,6 +31,8 @@ class TestTrumbaDao(TestCase):
                          "bb:ppp")
         self.assertEqual(TrumbaTac_DAO()._get_basic_auth(),
                          "tt:ppp")
+        self.assertEqual(TrumbaSea_DAO()._custom_headers('GET', '/', {}, None),
+                         {'Authorization': 'Basic c3M6cHBw'})
 
     def test_service_mock_paths(self):
         self.assertEqual(len(TrumbaSea_DAO().service_mock_paths()), 1)
