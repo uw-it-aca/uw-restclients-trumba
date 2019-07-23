@@ -32,20 +32,20 @@ class TestCalendars(TestCase):
         self.assertEqual(trumba_cal.campus, 'sea')
         self.assertEqual(trumba_cal.name, 'Seattle calendar')
         self.assertEqual(
-            (trumba_cal.to_json(),
-             {'calendarid': 1,
-              'campus': 'sea',
-              'name': 'Seattle calendar',
-              'permissions': {
-                   'dummyp': {'uwnetid': 'dummyp',
-                              'display_name': 'Dummy publisher',
-                              'level': 'PUBLISH'},
-                   'dummye': {'uwnetid': 'dummye',
-                              'display_name': 'Dummy editor',
-                              'level': 'EDIT'},
-                   'dummys': {'uwnetid': 'dummys',
-                              'display_name': 'Dummy showon',
-                              'level': 'SHOWON'}}})
+            trumba_cal.to_json(),
+            {'calendarid': 1,
+             'campus': 'sea',
+             'name': 'Seattle calendar',
+             'permissions': {
+                 'dummyp': {'uwnetid': 'dummyp',
+                            'display_name': 'Dummy publisher',
+                            'level': 'PUBLISH'},
+                 'dummye': {'uwnetid': 'dummye',
+                            'display_name': 'Dummy editor',
+                            'level': 'EDIT'},
+                 'dummys': {'uwnetid': 'dummys',
+                            'display_name': 'Dummy showon',
+                            'level': 'SHOWON'}}})
         perms = sorted(trumba_cal.permissions.values())
         self.assertEqual(len(perms), 3)
         self.assertTrue(perms[0].is_publish())
