@@ -7,7 +7,7 @@ SHOWON = 'showon'
 EDITOR_GROUP_DESC =\
      "Specifying who can add/edit/delete events on this calendar"
 SHOWON_GROUP_DESC =\
-    "Specifying the groups whose members have the showon permissions" +\
+    "Specifying the editor groups who can share their calendar events" +\
     " on this calendar"
 ADMIN_GROUP_NAME = 'u_eventcal_support'
 
