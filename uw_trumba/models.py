@@ -89,13 +89,11 @@ class TrumbaCalendar(models.Model):
         self.permissions[permission.uwnetid] = permission
 
     def to_json(self):
-        perm_json = {}
-        for key in self.permissions.keys():
-            perm_json[key] = self.permissions[key].to_json()
         return {'calendarid': self.calendarid,
                 'campus': self.campus,
                 'name': self.name,
-                'permissions': perm_json}
+                'permissions': {k: v.to_json()
+                                for k, v in self.permissions.items()}}
 
     def __eq__(self, other):
         return self.calendarid == other.calendarid
