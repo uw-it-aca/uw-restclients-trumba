@@ -73,8 +73,7 @@ class TestModels(TestCase):
         self.assertFalse(showon == editor)
         self.assertTrue(editor < showon)
 
-        self.assertEqual(editor.get_trumba_userid(),
-                         "editor@washington.edu")
+        self.assertEqual(editor.get_trumba_userid(), "editor@uw.edu")
         self.assertIsNotNone(str(editor))
         self.assertTrue(editor == editor)
 

@@ -19,7 +19,7 @@ from uw_trumba.exceptions import (
 
 
 logger = logging.getLogger(__name__)
-re_email = re.compile(r'[a-z][a-z0-9\-\_\.]{,127}@washington.edu', re.I)
+re_email = re.compile(r'[a-z][a-z0-9\-\_\.]{,127}@uw.edu', re.I)
 permissions_url = "/service/calendars.asmx/GetPermissions"
 
 
@@ -93,7 +93,7 @@ def _is_valid_email(email):
 
 
 def _extract_uwnetid(email):
-    return re.sub("@washington.edu", "", email, flags=re.I).lower()
+    return re.sub("@uw.edu", "", email, flags=re.I).lower()
 
 
 def _check_err(data):

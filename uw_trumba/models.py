@@ -128,7 +128,7 @@ class Permission(models.Model):
     level = models.CharField(max_length=6, choices=LEVEL_CHOICES, default=VIEW)
 
     def get_trumba_userid(self):
-        return "{0}@washington.edu".format(self.uwnetid)
+        return "{0}@uw.edu".format(self.uwnetid)
 
     def is_edit(self):
         return self.level is not None and self.level == Permission.EDIT
