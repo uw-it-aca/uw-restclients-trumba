@@ -67,19 +67,20 @@ class TestPermissions(TestCase):
         self.assertEqual(_create_req_body(1), '{"CalendarID": 1}')
 
     def test_is_valid_email(self):
-        self.assertTrue(_is_valid_email('test@WASHINGTON.EDU'))
-        self.assertTrue(_is_valid_email('test-email@washington.edu'))
-        self.assertTrue(_is_valid_email('Test_email@washington.edu'))
-        self.assertTrue(_is_valid_email('test.email@washington.edu'))
-        self.assertFalse(_is_valid_email('test@uw.edu'))
-        self.assertFalse(_is_valid_email('0test@washington.edu'))
+        self.assertTrue(_is_valid_email('test@UW.EDU'))
+        self.assertTrue(_is_valid_email('test-email@uw.edu'))
+        self.assertTrue(_is_valid_email('Test_email@uw.edu'))
+        self.assertTrue(_is_valid_email('test.email@uw.edu'))
+        self.assertFalse(_is_valid_email('test@washington.edu'))
+        self.assertFalse(_is_valid_email('0test@uw.edu'))
         self.assertFalse(_is_valid_email(''))
 
     def test_extract_uwnetid(self):
-        self.assertEqual(_extract_uwnetid('test@washington.edu'), 'test')
-        self.assertEqual(_extract_uwnetid('test@WASHINGTON.EDU'), 'test')
-        self.assertEqual(_extract_uwnetid('TEST@WASHINGTON.EDU'), 'test')
+        self.assertEqual(_extract_uwnetid('test@uw.edu'), 'test')
+        self.assertEqual(_extract_uwnetid('test@UW.EDU'), 'test')
+        self.assertEqual(_extract_uwnetid('TEST@UW.EDU'), 'test')
         self.assertEqual(_extract_uwnetid('test'), 'test')
-        self.assertEqual(_extract_uwnetid('@washington.edu'), '')
-        self.assertEqual(_extract_uwnetid('bad@uw.edu'), 'bad@uw.edu')
+        self.assertEqual(_extract_uwnetid('@uw.edu'), '')
+        self.assertEqual(_extract_uwnetid('bad@washington.edu'),
+                         'bad@washington.edu')
         self.assertEqual(_extract_uwnetid(''), '')
