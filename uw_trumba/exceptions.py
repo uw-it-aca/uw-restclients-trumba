@@ -6,8 +6,11 @@ a successful request.
 
 class TrumbaException(Exception):
 
+    def __init__(self, message, code):
+        self.message = "{} ==> {}".format(message, code)
+
     def __str__(self):
-        return self.__class__.__name__
+        return "{}: {}".format(self.message, self.__class__.__name__)
 
 
 class AccountNameEmpty(TrumbaException):

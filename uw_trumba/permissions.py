@@ -96,31 +96,31 @@ def _extract_uwnetid(email):
     return re.sub("@uw.edu", "", email, flags=re.I).lower()
 
 
-def _check_err(data):
+def _check_err(data, request_id):
     """
     :param data: response json data (must be not None).
     Check possible error code returned in the response body
     raise the coresponding exceptions
     """
     if data.get('d') is None:
-        raise NoDataReturned()
+        raise NoDataReturned(request_id, 200)
 
     if data['d'].get('Messages') is None:
         return
 
     msg = data['d']['Messages']
     if len(msg) == 0 or msg[0].get('Code') is None:
-        raise UnknownError()
+        raise UnknownError(request_id, 200)
 
     code = int(msg[0]['Code'])
     if code == 3006:
-        raise CalendarNotExist()
+        raise CalendarNotExist(request_id, code)
     elif code == 3007:
-        raise CalendarOwnByDiffAccount()
+        raise CalendarOwnByDiffAccount(request_id, code)
     else:
         logger.warn("Unexpected Error Code: {0} {1}".format(
                 code, msg[0].get('Description')))
-        raise UnexpectedError()
+        raise UnexpectedError(request_id, code)
 
 
 def load_json(request_id, post_response):
@@ -129,7 +129,7 @@ def load_json(request_id, post_response):
                                    post_response.status,
                                    post_response.reason)
     if post_response.data is None:
-        raise NoDataReturned()
+        raise NoDataReturned(request_id, 200)
     data = json.loads(post_response.data)
-    _check_err(data)
+    _check_err(data, request_id)
     return data

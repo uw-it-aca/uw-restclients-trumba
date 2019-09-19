@@ -40,28 +40,28 @@ class TestPermissions(TestCase):
         self.assertRaises(UnexpectedError,
                           _check_err,
                           {"d": {"Messages": [{"Code": 3009,
-                                               "Description": "..."}]}})
+                                               "Description": "..."}]}}, "")
 
         self.assertRaises(CalendarOwnByDiffAccount,
                           _check_err,
-                          {"d": {"Messages": [{"Code": 3007}]}})
+                          {"d": {"Messages": [{"Code": 3007}]}}, "")
 
         self.assertRaises(CalendarNotExist,
                           _check_err,
-                          {"d": {"Messages": [{"Code": 3006}]}})
+                          {"d": {"Messages": [{"Code": 3006}]}}, "")
 
         self.assertRaises(NoDataReturned,
-                          _check_err, {'d': None})
+                          _check_err, {'d': None}, "")
 
         self.assertRaises(UnknownError,
                           _check_err,
-                          {"d": {"Messages": []}})
+                          {"d": {"Messages": []}}, "")
 
         self.assertRaises(UnknownError,
                           _check_err,
-                          {"d": {"Messages": [{"Code": None}]}})
+                          {"d": {"Messages": [{"Code": None}]}}, "")
 
-        self.assertIsNone(_check_err({"d": {"Messages": None}}))
+        self.assertIsNone(_check_err({"d": {"Messages": None}}, ""))
 
     def test_create_body(self):
         self.assertEqual(_create_req_body(1), '{"CalendarID": 1}')

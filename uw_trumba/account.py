@@ -191,12 +191,12 @@ def _process_resp(request_id, response, is_success_func):
                                    response.reason
                                    )
     if response.data is None:
-        raise NoDataReturned()
+        raise NoDataReturned(request_id, 200)
 
     root = objectify.fromstring(response.data)
     if (root.ResponseMessage is None or
             root.ResponseMessage.attrib['Code'] is None):
-        raise UnknownError()
+        raise UnknownError(request_id, 200)
     resp_code = int(root.ResponseMessage.attrib['Code'])
     func = partial(is_success_func)
     if func(resp_code):
@@ -236,26 +236,24 @@ def _check_err(code, request_id):
     raise the corresponding TrumbaException
     """
     if code == 3006:
-        raise CalendarNotExist()
+        raise CalendarNotExist(request_id, code)
     elif code == 3007:
-        raise CalendarOwnByDiffAccount()
+        raise CalendarOwnByDiffAccount(request_id, code)
     elif code == 3008:
-        raise AccountNotExist()
+        raise AccountNotExist(request_id, code)
     elif code == 3009 or code == 3013:
-        raise AccountUsedByDiffUser()
+        raise AccountUsedByDiffUser(request_id, code)
     elif code == 3010:
-        raise InvalidPermissionLevel()
+        raise InvalidPermissionLevel(request_id, code)
     elif code == 3011:
-        raise FailedToClosePublisher()
+        raise FailedToClosePublisher(request_id, code)
     elif code == 3014:
-        raise InvalidEmail()
+        raise InvalidEmail(request_id, code)
     elif code == 3015:
-        raise NoAllowedPermission()
+        raise NoAllowedPermission(request_id, code)
     elif code == 3016:
-        raise AccountNameEmpty()
+        raise AccountNameEmpty(request_id, code)
     elif code == 3017 or code == 3018:
-        raise ErrorCreatingEditor()
+        raise ErrorCreatingEditor(request_id, code)
     else:
-        logger.error(
-            "Unexpected Error Code: {0} with {1}".format(code, request_id))
-        raise UnexpectedError()
+        raise UnexpectedError(request_id, code)
