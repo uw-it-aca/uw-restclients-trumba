@@ -49,8 +49,8 @@ class Permissions:
                     len(data['d']['Users']) > 0):
                 self._load_permissions(calendar, data['d']['Users'])
         except Exception as ex:
-            logger.error("get_cal_permissions on {0} ==> {1}".format(
-                    calendar, str(ex)))
+            logger.error(
+                "get_cal_permissions on {0} ==> {1}".format(calendar, ex))
 
     def _load_permissions(self, calendar, resp_fragment):
         for record in resp_fragment:
