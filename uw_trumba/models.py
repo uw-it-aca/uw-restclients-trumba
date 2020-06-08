@@ -123,9 +123,10 @@ class Permission(models.Model):
                      (SHOWON, 'Can view and show on'),
                      (VIEW, 'Can view content'),
                      (NONE, 'None'))
-    uwnetid = models.CharField(max_length=32)
-    display_name = models.CharField(max_length=96, default=None)
-    level = models.CharField(max_length=6, choices=LEVEL_CHOICES, default=VIEW)
+    uwnetid = models.CharField(max_length=128)
+    display_name = models.CharField(max_length=128, default=None)
+    level = models.CharField(max_length=16, choices=LEVEL_CHOICES,
+                             default=VIEW)
 
     def get_trumba_userid(self):
         return "{0}@uw.edu".format(self.uwnetid)
