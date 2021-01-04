@@ -98,6 +98,9 @@ class TrumbaCalendar(models.Model):
     def __eq__(self, other):
         return self.calendarid == other.calendarid
 
+    def __hash__(self):
+        return super().__hash__()
+
     def __lt__(self, other):
         return (self.campus == other.campus and
                 self.name < other.name)
@@ -190,6 +193,9 @@ class Permission(models.Model):
         return (self.uwnetid == other.uwnetid and
                 self.display_name == other.display_name and
                 self.level == other.level)
+
+    def __hash__(self):
+        return super().__hash__()
 
     def __lt__(self, other):
         return (self.is_higher_permission(other.level) or
