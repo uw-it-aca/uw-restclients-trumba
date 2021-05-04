@@ -24,7 +24,7 @@ setup(
     install_requires=['UW-RestClients-Core~=1.3.4',
                       'commonconf~=1.1',
                       'lxml~=4.6',
-                      'icalendar',
+                      'icalendar~=4.0.7',
                       ],
     license='Apache License, Version 2.0',
     description=('A library for connecting to the Trumba API'),
