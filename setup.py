@@ -6,7 +6,6 @@ See the README on `GitHub
 <https://github.com/uw-it-aca/uw-restclients-trumba>`_.
 """
 
-# The VERSION file is created by travis-ci, based on the tag name
 version_path = 'uw_trumba/VERSION'
 VERSION = open(os.path.join(os.path.dirname(__file__), version_path)).read()
 VERSION = VERSION.replace("\n", "")
@@ -21,10 +20,10 @@ setup(
     author="UW-IT AXDD",
     author_email="aca-it@uw.edu",
     include_package_data=True,
-    install_requires=['UW-RestClients-Core<2.0',
-                      'commonconf',
-                      'lxml',
-                      'icalendar',
+    install_requires=['UW-RestClients-Core~=1.3.4',
+                      'commonconf~=1.1',
+                      'lxml~=4.6',
+                      'icalendar~=4.0.7',
                       ],
     license='Apache License, Version 2.0',
     description=('A library for connecting to the Trumba API'),
