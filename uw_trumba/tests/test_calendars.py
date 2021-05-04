@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 from unittest import TestCase
 from uw_trumba.calendars import (
     Calendars, _is_valid_calendarid, _get_campus_calenders)

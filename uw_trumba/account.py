@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Interfacing Trumba Accounts' Service, the account module provides
 functions for adding and deleting editors and set their calendar permissions

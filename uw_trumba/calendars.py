@@ -1,3 +1,6 @@
+# Copyright 2021 UW-IT, University of Washington
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Interfacing with Trumba Calendars' service, this module
 provides methods to obtain calendar info and
