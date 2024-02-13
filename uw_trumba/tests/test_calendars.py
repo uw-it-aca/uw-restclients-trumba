@@ -1,4 +1,4 @@
-# Copyright 2023 UW-IT, University of Washington
+# Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 from unittest import TestCase
@@ -19,9 +19,9 @@ class TestCalendars(TestCase):
 
         self.assertTrue(cals.exists('bot'))
 
-        self.assertEquals(cals.total_calendars('bot'), 3)
-        self.assertEquals(cals.total_calendars('sea'), 10)
-        self.assertEquals(cals.total_calendars('tac'), 1)
+        self.assertEqual(cals.total_calendars('bot'), 3)
+        self.assertEqual(cals.total_calendars('sea'), 10)
+        self.assertEqual(cals.total_calendars('tac'), 1)
 
         sorted_cals = cals.get_campus_calendars('sea')
         self.assertEqual(len(sorted_cals), 10)
@@ -68,7 +68,7 @@ class TestCalendars(TestCase):
 
         cals.campus_calendars['bot'] = {}
         self.assertFalse(cals.exists('bot'))
-        self.assertEquals(cals.total_calendars('bot'), 0)
+        self.assertEqual(cals.total_calendars('bot'), 0)
 
     def test_is_valid_calendarid(self):
         self.assertTrue(_is_valid_calendarid(1))

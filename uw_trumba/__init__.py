@@ -1,4 +1,4 @@
-# Copyright 2023 UW-IT, University of Washington
+# Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 """
@@ -30,9 +30,11 @@ def get_calendar_by_name(calendar_name):
 
     if response.status != 200:
         raise DataFailureException(url, response.status, str(response.data))
-
+    data = (
+        response.data.decode('UTF-8') if isinstance(response.data, bytes)
+        else response.data)
     try:
-        calendar = Calendar.from_ical(response.data)
+        calendar = Calendar.from_ical(data)
     except Exception as ex:
         # turn data errors (ie, UnicodeEncodeError) into
         # DataFailureException

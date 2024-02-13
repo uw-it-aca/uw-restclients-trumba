@@ -1,21 +1,21 @@
-# Copyright 2023 UW-IT, University of Washington
+# Copyright 2024 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 from unittest import TestCase
 from commonconf import settings
 from restclients_core.exceptions import DataFailureException
-from uw_trumba.account import _make_add_account_url,\
-    add_editor, _make_del_account_url, delete_editor,\
-    _make_set_permissions_url, set_bot_permissions, set_sea_permissions,\
-    set_tac_permissions, set_perm_editor, set_perm_showon, set_perm_none,\
-    _is_editor_added, _is_editor_deleted, _is_permission_set,\
-    _check_err
+from uw_trumba.account import (
+    _make_add_account_url, add_editor, _make_del_account_url, delete_editor,
+    _make_set_permissions_url, set_bot_permissions, set_sea_permissions,
+    set_tac_permissions, set_perm_editor, set_perm_showon, set_perm_none,
+    _is_editor_added, _is_editor_deleted, _is_permission_set,
+    _check_err)
 from uw_trumba.models import TrumbaCalendar
-from uw_trumba.exceptions import AccountNameEmpty, AccountNotExist,\
-    AccountUsedByDiffUser, CalendarNotExist, CalendarOwnByDiffAccount,\
-    InvalidEmail, InvalidPermissionLevel, FailedToClosePublisher,\
-    NoAllowedPermission, ErrorCreatingEditor, NoDataReturned, UnknownError,\
-    UnexpectedError
+from uw_trumba.exceptions import (
+    AccountNameEmpty, AccountNotExist, UnexpectedError,
+    AccountUsedByDiffUser, CalendarNotExist, CalendarOwnByDiffAccount,
+    InvalidEmail, InvalidPermissionLevel, FailedToClosePublisher,
+    NoAllowedPermission, ErrorCreatingEditor, NoDataReturned, UnknownError)
 
 
 ADD_ACC_URL = "/service/accounts.asmx/CreateEditor?"
