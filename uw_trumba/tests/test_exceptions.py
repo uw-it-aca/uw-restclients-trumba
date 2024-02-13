@@ -3,11 +3,11 @@
 
 from unittest import TestCase
 from commonconf import settings
-from uw_trumba.exceptions import AccountNameEmpty, AccountNotExist,\
-    AccountUsedByDiffUser, CalendarNotExist, CalendarOwnByDiffAccount,\
-    InvalidEmail, InvalidPermissionLevel, FailedToClosePublisher,\
-    NoAllowedPermission, ErrorCreatingEditor, NoDataReturned, UnknownError,\
-    UnexpectedError, UnknownError
+from uw_trumba.exceptions import (
+    AccountNameEmpty, AccountNotExist, UnexpectedError, UnknownError,
+    AccountUsedByDiffUser, CalendarNotExist, CalendarOwnByDiffAccount,
+    InvalidEmail, InvalidPermissionLevel, FailedToClosePublisher,
+    NoAllowedPermission, ErrorCreatingEditor, NoDataReturned, UnknownError)
 
 
 class TrumbaTestExceptions(TestCase):
