@@ -24,7 +24,7 @@ setup(
     author_email="aca-it@uw.edu",
     include_package_data=True,
     install_requires=['UW-RestClients-Core',
-                      'lxml',
+                      'lxml<5',
                       'icalendar',
                       ],
     license='Apache License, Version 2.0',
