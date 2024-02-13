@@ -31,7 +31,7 @@ def get_calendar_by_name(calendar_name):
     if response.status != 200:
         raise DataFailureException(url, response.status, str(response.data))
     data = (
-        response.data.decode('UTF-8') if type(response.data) == bytes
+        response.data.decode('UTF-8') if isinstance(response.data, bytes)
         else response.data)
     try:
         calendar = Calendar.from_ical(data)
