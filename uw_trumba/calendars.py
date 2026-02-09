@@ -137,5 +137,5 @@ def _get_campus_calenders(campus):
     else:
         logger.error("Invalid campus code: {0}".format(campus))
         return None
-    request_id = "{0} {1}".format(campus, calendarlist_url)
+    request_id = f"{campus} {calendarlist_url}"
     return load_json(request_id, resp)
