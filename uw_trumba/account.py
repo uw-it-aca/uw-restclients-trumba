@@ -1,4 +1,4 @@
-# Copyright 2025 UW-IT, University of Washington
+# Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
 """
@@ -40,8 +40,11 @@ def _make_add_account_url(name, userid):
     :return: the URL string for the GET request call to
     Trumba CreateEditor method
     """
-    return "{0}?Name={1}&Email={2}@uw.edu&Password=".format(
-        add_account_url_prefix, re.sub(r' ', '%20', name), userid)
+    prefix = add_account_url_prefix
+    user_name = quote(name)
+    return (
+        f"{prefix}?Name={user_name}&Email={userid}@uw.edu&Password="
+    )
 
 
 def add_editor(name, userid):
@@ -64,8 +67,7 @@ def _make_del_account_url(userid):
     :return: the URL string for GET request call to
     Trumba CloseEditor method
     """
-    return "{0}?Email={1}@uw.edu".format(
-        del_account_url_prefix, userid)
+    return f"{del_account_url_prefix}?Email={userid}@uw.edu"
 
 
 def delete_editor(userid):
@@ -87,8 +89,10 @@ def _make_set_permissions_url(calendar_id, userid, level):
     :return: the URL string for GET request call
     to Trumba SetPermissions method
     """
-    return "{0}?CalendarID={1}&Email={2}@uw.edu&Level={3}".format(
-        set_permission_url_prefix, calendar_id, userid, level)
+    pref = set_permission_url_prefix
+    return (
+        f"{pref}?CalendarID={calendar_id}&Email={userid}@uw.edu&Level={level}"
+    )
 
 
 def set_perm_editor(calendar, userid):
