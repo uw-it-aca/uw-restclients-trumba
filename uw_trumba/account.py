@@ -40,10 +40,10 @@ def _make_add_account_url(name, userid):
     :return: the URL string for the GET request call to
     Trumba CreateEditor method
     """
-    user_name = re.sub(r' ', '%20', name)
+    prefix = add_account_url_prefix
+    user_name = quote(name)
     return (
-        f"{add_account_url_prefix}?Name={user_name}"
-        + f"&Email={userid}@uw.edu&Password="
+        f"{prefix}?Name={user_name}&Email={userid}@uw.edu&Password="
     )
 
 
@@ -89,9 +89,9 @@ def _make_set_permissions_url(calendar_id, userid, level):
     :return: the URL string for GET request call
     to Trumba SetPermissions method
     """
+    pref = set_permission_url_prefix
     return (
-        f"{set_permission_url_prefix}?CalendarID={calendar_id}" +
-        f"&Email={userid}@uw.edu&Level={level}"
+        f"{pref}?CalendarID={calendar_id}&Email={userid}@uw.edu&Level={level}"
     )
 
 
